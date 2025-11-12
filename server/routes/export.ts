@@ -1,7 +1,19 @@
+/**
+ * @fileoverview Data Export Routes
+ * Handles exporting accessibility data in multiple formats (JSON, CSV, Markdown, PDF).
+ * Provides public access to site data for reporting and analysis.
+ *
+ * @module routes/export
+ */
+
 import { Router } from "express";
 import { parse } from "papaparse";
 import { supabase } from "../utils/supabase.js";
 
+/**
+ * Express router for data export endpoints
+ * @type {express.Router}
+ */
 const router = Router();
 
 function formatMarkdown(sites: any[], includeHistory = false) {

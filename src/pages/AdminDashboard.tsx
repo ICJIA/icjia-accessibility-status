@@ -1,0 +1,482 @@
+/**
+ * @fileoverview AdminDashboard Page
+ * Administrative dashboard for managing users, API keys, and system monitoring.
+ * Provides access to activity logs, payload comparison, and user management.
+ *
+ * @module pages/AdminDashboard
+ */
+
+import { useState, useEffect } from "react";
+import {
+  Settings,
+  UserPlus,
+  Key as KeyIcon,
+  GitCompare,
+  Users,
+  Lock,
+  Database,
+  BarChart3,
+  Activity,
+} from "lucide-react";
+import { ActivityLog } from "../components/ActivityLog";
+import { PayloadComparison } from "../components/PayloadComparison";
+import { api } from "../lib/api";
+
+/**
+ * Represents a user in the system
+ * @typedef {Object} User
+ * @property {string} id - User ID
+ * @property {string} username - Username
+ * @property {string} email - Email address
+ * @property {string} created_at - Creation timestamp
+ * @property {string} updated_at - Last update timestamp
+ * @property {boolean} [is_primary_admin] - Whether user is primary admin
+ */
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+  is_primary_admin?: boolean;
+}
+
+/**
+ * AdminDashboard Page Component
+ *
+ * Administrative interface providing:
+ * - User management (create, delete, reset password)
+ * - API key management
+ * - Activity log viewing
+ * - Payload comparison tool
+ * - System statistics and monitoring
+ * - Database management options
+ *
+ * @component
+ * @returns {React.ReactElement} The admin dashboard page
+ *
+ * @example
+ * <Route path="/admin" element={<AdminDashboard />} />
+ */
+export function AdminDashboard() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await api.users.list();
+      setUsers(data.users || []);
+    } catch (err: any) {
+      console.error("Failed to load users:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      await api.users.create(username, email, password);
+      setShowCreateModal(false);
+      await loadUsers();
+      alert("User created successfully");
+    } catch (err: any) {
+      alert(`Failed to create user: ${err.message}`);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedUser) return;
+
+    const formData = new FormData(e.currentTarget);
+    const newPassword = formData.get("newPassword") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      await api.users.resetPassword(selectedUser.id, newPassword);
+      setShowResetPasswordModal(false);
+      setSelectedUser(null);
+      alert("Password reset successfully. User will need to log in again.");
+    } catch (err: any) {
+      alert(`Failed to reset password: ${err.message}`);
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Never";
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <Settings className="h-8 w-8" />
+          Admin Dashboard
+        </h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
+          Monitor system activity and manage administrative tasks
+        </p>
+      </div>
+
+      {/* Action Cards Section - Top */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* User Management Card */}
+        <a
+          href="/admin/users"
+          className="group block p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg shadow hover:shadow-xl transition-all border border-blue-200 dark:border-blue-700 hover:scale-105"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-blue-600 rounded-lg group-hover:bg-blue-700 transition-colors">
+              <Users className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            User Management
+          </h3>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            Create, edit, and manage admin users
+          </p>
+        </a>
+
+        {/* API Keys Card */}
+        <a
+          href="/admin/api-keys"
+          className="group block p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-lg shadow hover:shadow-xl transition-all border border-purple-200 dark:border-purple-700 hover:scale-105"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-purple-600 rounded-lg group-hover:bg-purple-700 transition-colors">
+              <Lock className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            API Keys
+          </h3>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            Manage API keys for programmatic access
+          </p>
+        </a>
+
+        {/* API Payloads Card */}
+        <a
+          href="/admin/payloads"
+          className="group block p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg shadow hover:shadow-xl transition-all border border-green-200 dark:border-green-700 hover:scale-105"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-green-600 rounded-lg group-hover:bg-green-700 transition-colors">
+              <Database className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            API Payloads
+          </h3>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            View and manage all API payload uploads
+          </p>
+        </a>
+
+        {/* Sites Dashboard Card */}
+        <a
+          href="/"
+          className="group block p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-lg shadow hover:shadow-xl transition-all border border-orange-200 dark:border-orange-700 hover:scale-105"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-orange-600 rounded-lg group-hover:bg-orange-700 transition-colors">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Sites Dashboard
+          </h3>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            View and manage accessibility scores
+          </p>
+        </a>
+      </div>
+
+      {/* User Management Section */}
+      <div className="mb-12">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Admin Users
+            </h2>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <UserPlus className="h-4 w-4" />
+              Add User
+            </button>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-4 text-gray-600 dark:text-gray-400">
+              Loading users...
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Username
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Email
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Created
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {users.map((user) => (
+                    <tr
+                      key={user.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    >
+                      <td className="px-4 py-2 text-gray-900 dark:text-gray-100">
+                        <div className="flex items-center gap-2">
+                          <span>{user.username}</span>
+                          {user.is_primary_admin && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
+                              Primary Admin
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 text-gray-600 dark:text-gray-400">
+                        {user.email}
+                      </td>
+                      <td className="px-4 py-2 text-gray-600 dark:text-gray-400">
+                        {formatDate(user.created_at)}
+                      </td>
+                      <td className="px-4 py-2">
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowResetPasswordModal(true);
+                          }}
+                          disabled={user.is_primary_admin}
+                          className={`flex items-center gap-1 ${
+                            user.is_primary_admin
+                              ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                              : "text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300"
+                          }`}
+                          title={
+                            user.is_primary_admin
+                              ? "Cannot reset password for primary admin user"
+                              : "Reset password"
+                          }
+                        >
+                          <KeyIcon className="h-4 w-4" />
+                          <span className="text-xs">Reset Password</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Payload Comparison Section */}
+      <div className="mb-12">
+        <button
+          onClick={() => setShowComparisonModal(true)}
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all shadow hover:shadow-lg font-medium"
+        >
+          <GitCompare className="h-5 w-5" />
+          Compare Payloads
+        </button>
+      </div>
+
+      {/* Recent Activity Section - Bottom */}
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-4">
+          <Activity className="h-6 w-6 text-gray-900 dark:text-white" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Recent Activity
+          </h2>
+        </div>
+        <ActivityLog limit={10} compact={true} />
+      </div>
+
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Create New User
+            </h2>
+            <form onSubmit={handleCreateUser} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  minLength={8}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  required
+                  minLength={8}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div className="flex gap-2 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Create User
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {showResetPasswordModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Reset Password
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Reset password for user: <strong>{selectedUser.username}</strong>
+            </p>
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  required
+                  minLength={8}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  required
+                  minLength={8}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  <strong>Note:</strong> This will log the user out of all
+                  sessions.
+                </p>
+              </div>
+              <div className="flex gap-2 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+                >
+                  Reset Password
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetPasswordModal(false);
+                    setSelectedUser(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Payload Comparison Modal */}
+      <PayloadComparison
+        isOpen={showComparisonModal}
+        onClose={() => setShowComparisonModal(false)}
+      />
+    </div>
+  );
+}

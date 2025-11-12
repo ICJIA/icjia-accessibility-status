@@ -1,7 +1,20 @@
+/**
+ * @fileoverview Payload Management Routes
+ * Handles payload retrieval, viewing, and comparison.
+ * Payloads are raw API responses from accessibility scanning tools.
+ * All routes require authentication.
+ *
+ * @module routes/payloads
+ */
+
 import { Router } from "express";
 import { supabase } from "../utils/supabase.js";
 import { requireAuth } from "../middleware/auth.js";
 
+/**
+ * Express router for payload management endpoints
+ * @type {express.Router}
+ */
 const router = Router();
 
 /**

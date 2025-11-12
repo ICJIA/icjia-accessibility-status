@@ -1,3 +1,11 @@
+/**
+ * @fileoverview Navigation Component
+ * Main navigation bar with theme toggle, user menu, and health status indicator.
+ * Displays different navigation options based on authentication status.
+ *
+ * @module components/Navigation
+ */
+
 import { Link } from "react-router-dom";
 import {
   Moon,
@@ -16,6 +24,24 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useState, useEffect } from "react";
 import { Tooltip } from "./Tooltip";
 
+/**
+ * Represents the health status of the application
+ * @typedef {Object} HealthStatus
+ * @property {string} status - Overall health status
+ * @property {string} timestamp - ISO timestamp of the health check
+ * @property {Object} backend - Backend service status
+ * @property {string} backend.status - Backend status
+ * @property {number} backend.uptime - Backend uptime in seconds
+ * @property {string} backend.nodeVersion - Node.js version
+ * @property {string} backend.environment - Environment (production/development)
+ * @property {Object} database - Database status
+ * @property {string} database.status - Database status
+ * @property {string} database.supabaseUrl - Supabase URL
+ * @property {Object} database.tables - Table-specific status
+ * @property {string} database.error - Database error message if any
+ * @property {Array} checks - Array of health checks
+ * @property {number} responseTime - Response time in milliseconds
+ */
 interface HealthStatus {
   status: string;
   timestamp: string;
@@ -45,6 +71,22 @@ interface HealthStatus {
   responseTime: number;
 }
 
+/**
+ * Navigation Component
+ *
+ * Renders the main navigation bar with:
+ * - Home and documentation links
+ * - Theme toggle (light/dark mode)
+ * - Health status indicator
+ * - User menu (login/logout/admin options)
+ * - Responsive design with mobile support
+ *
+ * @component
+ * @returns {React.ReactElement} The rendered navigation component
+ *
+ * @example
+ * <Navigation />
+ */
 export function Navigation() {
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
