@@ -221,57 +221,46 @@ module.exports = {
       name: "icjia-accessibility-docs",
 
       // Script to run
-      // "yarn" = use Yarn package manager as the command
-      // This allows us to run Yarn commands via PM2
-      script: "yarn",
+      // Use npx to run http-server to serve the pre-built static docs
+      // This serves the docs/build directory as static files
+      script: "npx",
 
       // Arguments to pass to the script
-      // "workspace icjia-accessibility-docs start"
-      // This tells Yarn to:
-      // 1. Use the workspace named "icjia-accessibility-docs"
-      // 2. Run the "start" script defined in that workspace's package.json
-      //
-      // The docs/package.json contains:
-      // "start": "docusaurus start"
-      // Which starts the Docusaurus development server
-      args: "workspace icjia-accessibility-docs start",
+      // "http-server docs/build -p 3002 -c-1"
+      // This tells http-server to:
+      // 1. Serve the docs/build directory (pre-built Docusaurus output)
+      // 2. Listen on port 3002
+      // 3. Disable caching (-c-1) for development/testing
+      args: "http-server docs/build -p 3002 -c-1",
 
       // Number of instances to run
       // 1 = single instance (recommended)
-      // Docusaurus doesn't benefit from multiple instances
+      // http-server doesn't benefit from multiple instances
       instances: 1,
 
       // Execution mode
       // "fork" = single process (default, recommended)
-      // "cluster" = multiple processes (not needed for Docusaurus)
+      // "cluster" = multiple processes (not needed for http-server)
       exec_mode: "fork",
 
       // Watch mode - automatically restart on file changes
       // false = disabled (recommended for production)
-      // Docusaurus has its own hot-reload built-in
       watch: false,
 
       // Environment variables for this service
-      // These are passed to the Docusaurus process
       env: {
         // Set Node environment to production
-        // Docusaurus will optimize for production
         NODE_ENV: "production",
-
-        // Port for the documentation server
-        // Docusaurus will listen on this port
-        // Nginx reverse proxy forwards requests to this port
-        PORT: 3002,
       },
 
       // Error log file path
       // All stderr output goes here
-      // Useful for debugging Docusaurus issues
+      // Useful for debugging issues
       error_file: "./logs/docs-error.log",
 
       // Output log file path
       // All stdout output goes here
-      // Contains Docusaurus startup messages and logs
+      // Contains http-server startup messages and logs
       out_file: "./logs/docs-out.log",
 
       // Date format for log timestamps
