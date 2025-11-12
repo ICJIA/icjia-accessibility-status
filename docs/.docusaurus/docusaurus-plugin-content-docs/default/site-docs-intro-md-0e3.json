@@ -1,0 +1,20 @@
+{
+  "id": "intro",
+  "title": "Welcome to ICJIA Accessibility Portal",
+  "description": "The ICJIA Accessibility Status Portal is a comprehensive web accessibility tracking system designed to monitor progress toward April 2026 compliance goals across all ICJIA web properties.",
+  "source": "@site/docs/intro.md",
+  "sourceDirName": ".",
+  "slug": "/intro",
+  "permalink": "/docs/intro",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/intro.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Quick Start (5 Minutes)",
+    "permalink": "/docs/quick-start"
+  }
+}

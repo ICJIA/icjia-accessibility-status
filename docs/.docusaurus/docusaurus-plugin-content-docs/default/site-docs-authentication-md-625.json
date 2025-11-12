@@ -1,0 +1,24 @@
+{
+  "id": "authentication",
+  "title": "Authentication System",
+  "description": "The ICJIA Accessibility Portal uses a custom cookie-based authentication system (not Supabase Auth).",
+  "source": "@site/docs/authentication.md",
+  "sourceDirName": ".",
+  "slug": "/authentication",
+  "permalink": "/docs/authentication",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/authentication.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Complete Setup Guide",
+    "permalink": "/docs/setup-guide"
+  },
+  "next": {
+    "title": "Database Schema",
+    "permalink": "/docs/database-schema"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "deployment/environment-verification",
+  "title": "Environment Verification",
+  "description": "Verify environment-specific configuration for development and production deployments",
+  "source": "@site/docs/deployment/environment-verification.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/environment-verification",
+  "permalink": "/docs/deployment/environment-verification",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/environment-verification.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1.5,
+  "frontMatter": {
+    "title": "Environment Verification",
+    "sidebar_position": 1.5,
+    "description": "Verify environment-specific configuration for development and production deployments"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Deployment Overview",
+    "permalink": "/docs/deployment/overview"
+  },
+  "next": {
+    "title": "Laravel Forge Deployment Guide",
+    "permalink": "/docs/deployment/laravel-forge"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "api/api-keys",
+  "title": "API Keys",
+  "description": "Manage API keys for programmatic access to the ICJIA Accessibility Portal.",
+  "source": "@site/docs/api/api-keys.md",
+  "sourceDirName": "api",
+  "slug": "/api/api-keys",
+  "permalink": "/docs/api/api-keys",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/api/api-keys.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Sites API",
+    "permalink": "/docs/api/sites"
+  },
+  "next": {
+    "title": "Monorepo Setup",
+    "permalink": "/docs/setup/monorepo-setup"
+  }
+}

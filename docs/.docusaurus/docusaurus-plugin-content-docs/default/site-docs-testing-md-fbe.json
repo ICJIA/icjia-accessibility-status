@@ -1,0 +1,24 @@
+{
+  "id": "testing",
+  "title": "Testing Guide",
+  "description": "Guide to testing the ICJIA Accessibility Portal.",
+  "source": "@site/docs/testing.md",
+  "sourceDirName": ".",
+  "slug": "/testing",
+  "permalink": "/docs/testing",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/testing.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Database Reset Scripts",
+    "permalink": "/docs/reset-scripts"
+  },
+  "next": {
+    "title": "Environment Sample Audit",
+    "permalink": "/docs/configuration/env-sample-audit"
+  }
+}

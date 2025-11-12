@@ -1,0 +1,24 @@
+{
+  "id": "reset-scripts",
+  "title": "Database Reset Scripts",
+  "description": "Two powerful reset scripts are available for development environments to help you manage your database state.",
+  "source": "@site/docs/reset-scripts.md",
+  "sourceDirName": ".",
+  "slug": "/reset-scripts",
+  "permalink": "/docs/reset-scripts",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/reset-scripts.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Development Setup",
+    "permalink": "/docs/development-setup"
+  },
+  "next": {
+    "title": "Testing Guide",
+    "permalink": "/docs/testing"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "api/overview",
+  "title": "API Overview",
+  "description": "The ICJIA Accessibility Portal provides a comprehensive REST API for programmatic access to site data and management.",
+  "source": "@site/docs/api/overview.md",
+  "sourceDirName": "api",
+  "slug": "/api/overview",
+  "permalink": "/docs/api/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/api/overview.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Environment Configuration",
+    "permalink": "/docs/configuration/env-configuration"
+  },
+  "next": {
+    "title": "API Authentication",
+    "permalink": "/docs/api/authentication"
+  }
+}

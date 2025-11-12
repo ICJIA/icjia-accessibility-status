@@ -1,0 +1,24 @@
+{
+  "id": "database-schema",
+  "title": "Database Schema",
+  "description": "Overview of the ICJIA Accessibility Portal database schema.",
+  "source": "@site/docs/database-schema.md",
+  "sourceDirName": ".",
+  "slug": "/database-schema",
+  "permalink": "/docs/database-schema",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/database-schema.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Authentication System",
+    "permalink": "/docs/authentication"
+  },
+  "next": {
+    "title": "System Architecture",
+    "permalink": "/docs/architecture"
+  }
+}

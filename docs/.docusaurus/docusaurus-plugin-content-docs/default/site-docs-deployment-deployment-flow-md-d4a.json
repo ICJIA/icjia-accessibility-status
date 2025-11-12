@@ -1,0 +1,29 @@
+{
+  "id": "deployment/deployment-flow",
+  "title": "Deployment Flow Diagram",
+  "description": "Visual diagram of the deployment flow",
+  "source": "@site/docs/deployment/deployment-flow.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/deployment-flow",
+  "permalink": "/docs/deployment/deployment-flow",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/deployment-flow.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 11,
+  "frontMatter": {
+    "title": "Deployment Flow Diagram",
+    "sidebar_position": 11,
+    "description": "Visual diagram of the deployment flow"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Deployment Complete",
+    "permalink": "/docs/deployment/deployment-complete"
+  },
+  "next": {
+    "title": "Docusaurus Deployment",
+    "permalink": "/docs/deployment/docusaurus-deployment"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "deployment/health-check-monitoring",
+  "title": "Health Check Monitoring",
+  "description": "This guide explains how to set up automated monitoring for the ICJIA Accessibility Status Portal health check endpoint.",
+  "source": "@site/docs/deployment/health-check-monitoring.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/health-check-monitoring",
+  "permalink": "/docs/deployment/health-check-monitoring",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/health-check-monitoring.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

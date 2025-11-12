@@ -1,0 +1,29 @@
+{
+  "id": "configuration/env-configuration",
+  "title": "Environment Configuration",
+  "description": "Complete environment configuration audit and setup guide",
+  "source": "@site/docs/configuration/env-configuration.md",
+  "sourceDirName": "configuration",
+  "slug": "/configuration/env-configuration",
+  "permalink": "/docs/configuration/env-configuration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/configuration/env-configuration.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "title": "Environment Configuration",
+    "sidebar_position": 2,
+    "description": "Complete environment configuration audit and setup guide"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Environment Sample Audit",
+    "permalink": "/docs/configuration/env-sample-audit"
+  },
+  "next": {
+    "title": "API Overview",
+    "permalink": "/docs/api/overview"
+  }
+}

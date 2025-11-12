@@ -1,0 +1,27 @@
+{
+  "id": "deployment/forge-deployment-script",
+  "title": "Forge Deployment Script Setup",
+  "description": "Quick reference for setting up the deployment script in Laravel Forge.",
+  "source": "@site/docs/deployment/forge-deployment-script.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/forge-deployment-script",
+  "permalink": "/docs/deployment/forge-deployment-script",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/forge-deployment-script.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Automated Deployment Setup",
+    "permalink": "/docs/deployment/automated-deployment-setup"
+  },
+  "next": {
+    "title": "Deployment Scripts Reference",
+    "permalink": "/docs/deployment/deployment-scripts-reference"
+  }
+}

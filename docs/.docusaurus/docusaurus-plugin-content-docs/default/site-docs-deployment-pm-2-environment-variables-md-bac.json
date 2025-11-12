@@ -1,0 +1,29 @@
+{
+  "id": "deployment/pm2-environment-variables",
+  "title": "PM2 Environment Variables",
+  "description": "Comprehensive comparison of PM2 environment variables between development and production environments",
+  "source": "@site/docs/deployment/pm2-environment-variables.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/pm2-environment-variables",
+  "permalink": "/docs/deployment/pm2-environment-variables",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/pm2-environment-variables.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2.5,
+  "frontMatter": {
+    "title": "PM2 Environment Variables",
+    "sidebar_position": 2.5,
+    "description": "Comprehensive comparison of PM2 environment variables between development and production environments"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "PM2 Configuration",
+    "permalink": "/docs/deployment/pm2"
+  },
+  "next": {
+    "title": "PM2 Ecosystem Configuration",
+    "permalink": "/docs/deployment/pm2-ecosystem-config"
+  }
+}

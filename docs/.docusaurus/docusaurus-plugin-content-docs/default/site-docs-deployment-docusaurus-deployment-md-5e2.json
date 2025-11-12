@@ -1,0 +1,29 @@
+{
+  "id": "deployment/docusaurus-deployment",
+  "title": "Docusaurus Deployment",
+  "description": "Docusaurus deployment documentation",
+  "source": "@site/docs/deployment/docusaurus-deployment.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/docusaurus-deployment",
+  "permalink": "/docs/deployment/docusaurus-deployment",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/docusaurus-deployment.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 12,
+  "frontMatter": {
+    "title": "Docusaurus Deployment",
+    "sidebar_position": 12,
+    "description": "Docusaurus deployment documentation"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Deployment Flow Diagram",
+    "permalink": "/docs/deployment/deployment-flow"
+  },
+  "next": {
+    "title": "Forge Script Setup",
+    "permalink": "/docs/deployment/forge-script-setup"
+  }
+}

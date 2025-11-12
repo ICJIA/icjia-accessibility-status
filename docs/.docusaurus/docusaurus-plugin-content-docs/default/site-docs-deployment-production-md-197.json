@@ -1,0 +1,24 @@
+{
+  "id": "deployment/production",
+  "title": "Production Deployment",
+  "description": "Complete guide for deploying to a production Ubuntu server.",
+  "source": "@site/docs/deployment/production.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/production",
+  "permalink": "/docs/deployment/production",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/production.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Deployment Scripts Reference",
+    "permalink": "/docs/deployment/deployment-scripts-reference"
+  },
+  "next": {
+    "title": "Nginx Configuration",
+    "permalink": "/docs/deployment/nginx"
+  }
+}

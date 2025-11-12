@@ -1,0 +1,29 @@
+{
+  "id": "deployment/deployment-verification",
+  "title": "Deployment Verification",
+  "description": "Summary of deployment verification and testing",
+  "source": "@site/docs/deployment/deployment-verification.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/deployment-verification",
+  "permalink": "/docs/deployment/deployment-verification",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/deployment-verification.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 7,
+  "frontMatter": {
+    "title": "Deployment Verification",
+    "sidebar_position": 7,
+    "description": "Summary of deployment verification and testing"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Automated Deployment Complete",
+    "permalink": "/docs/deployment/automated-deployment-complete"
+  },
+  "next": {
+    "title": "Laravel Forge Quick Start",
+    "permalink": "/docs/deployment/forge-quick-start"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "deployment/deployment-complete",
+  "title": "Deployment Complete",
+  "description": "Laravel Forge deployment documentation completion summary",
+  "source": "@site/docs/deployment/deployment-complete.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/deployment-complete",
+  "permalink": "/docs/deployment/deployment-complete",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/deployment-complete.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 10,
+  "frontMatter": {
+    "title": "Deployment Complete",
+    "sidebar_position": 10,
+    "description": "Laravel Forge deployment documentation completion summary"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Forge Deployment Checklist",
+    "permalink": "/docs/deployment/forge-checklist"
+  },
+  "next": {
+    "title": "Deployment Flow Diagram",
+    "permalink": "/docs/deployment/deployment-flow"
+  }
+}

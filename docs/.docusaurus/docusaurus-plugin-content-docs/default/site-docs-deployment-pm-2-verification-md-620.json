@@ -1,0 +1,29 @@
+{
+  "id": "deployment/pm2-verification",
+  "title": "PM2 Verification Report",
+  "description": "Complete verification of PM2 ecosystem configuration",
+  "source": "@site/docs/deployment/pm2-verification.md",
+  "sourceDirName": "deployment",
+  "slug": "/deployment/pm2-verification",
+  "permalink": "/docs/deployment/pm2-verification",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/ICJIA/icjia-accessibility-status/tree/main/docs/docs/deployment/pm2-verification.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "title": "PM2 Verification Report",
+    "sidebar_position": 4,
+    "description": "Complete verification of PM2 ecosystem configuration"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "PM2 Ecosystem Configuration",
+    "permalink": "/docs/deployment/pm2-ecosystem-config"
+  },
+  "next": {
+    "title": "Automated Deployment Setup",
+    "permalink": "/docs/deployment/automated-deployment"
+  }
+}

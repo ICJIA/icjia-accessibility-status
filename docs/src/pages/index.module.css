@@ -1,0 +1,119 @@
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1a202c 100%);
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 0;
+  color: #e2e8f0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: #cbd5e1;
+  margin: 1rem 0 2rem 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.buttons .button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.buttons .button--primary {
+  background-color: #00dc82;
+  color: #0f172a;
+  border: 2px solid #00dc82;
+}
+
+.buttons .button--primary:hover {
+  background-color: #00c96f;
+  border-color: #00c96f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 220, 130, 0.3);
+}
+
+.buttons .button--secondary {
+  background-color: transparent;
+  color: #00dc82;
+  border: 2px solid #00dc82;
+}
+
+.buttons .button--secondary:hover {
+  background-color: rgba(0, 220, 130, 0.1);
+  border-color: #00c96f;
+  transform: translateY(-2px);
+}
+
+.features {
+  padding: 4rem 0;
+  background-color: #0f172a;
+}
+
+.featureLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.featureBox {
+  padding: 2rem;
+  background-color: #1a202c;
+  border-radius: 0.5rem;
+  border: 1px solid #2d3748;
+  transition: all 0.3s ease;
+  height: 100%;
+  cursor: pointer;
+}
+
+.featureBox:hover {
+  border-color: #00dc82;
+  box-shadow: 0 4px 12px rgba(0, 220, 130, 0.2);
+  transform: translateY(-4px);
+}
+
+.featureBox h3 {
+  color: #00dc82;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.featureBox p {
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons .button {
+    width: 100%;
+  }
+}
