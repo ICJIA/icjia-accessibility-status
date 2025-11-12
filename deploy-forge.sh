@@ -8,7 +8,7 @@
 # It handles the complete deployment workflow:
 # 1. Pull latest code from main branch
 # 2. Install/update dependencies
-# 3. Build frontend and documentation
+# 3. Build frontend
 # 4. Restart PM2 services
 # 5. Verify deployment success
 #
@@ -163,10 +163,10 @@ else
     exit 1
 fi
 
-# Step 5: Build frontend and documentation
-log_info "Step 5: Building frontend and documentation..."
+# Step 5: Build frontend
+log_info "Step 5: Building frontend..."
 if yarn build; then
-    log_success "Frontend and documentation built successfully"
+    log_success "Frontend built successfully"
 else
     log_error "Build failed"
     exit 1

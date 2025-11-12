@@ -3,7 +3,7 @@
  * PM2 ECOSYSTEM CONFIGURATION FILE
  * ============================================================================
  *
- * This file configures PM2 to manage three services for the ICJIA Accessibility
+ * This file configures PM2 to manage the backend service for the ICJIA Accessibility
  * Status application:
  *
  * 1. BACKEND SERVICE (Express API)
@@ -11,12 +11,7 @@
  *    - Handles API requests
  *    - Uses tsx runtime for TypeScript execution
  *
- * 2. DOCUMENTATION SERVICE (Docusaurus)
- *    - Runs on port 3002
- *    - Serves documentation site
- *    - Runs via Yarn workspace
- *
- * 3. FRONTEND SERVICE (React + Vite)
+ * 2. FRONTEND SERVICE (React + Vite)
  *    - Built to dist/ directory
  *    - Served by Nginx reverse proxy
  *    - Not managed by PM2 (static files)
@@ -42,7 +37,6 @@
  *
  *   This command will:
  *   - Start the backend service (port 3001)
- *   - Start the documentation service (port 3002)
  *   - Create logs in ./logs/ directory
  *   - Enable auto-restart on crash
  *
@@ -55,7 +49,6 @@
  *   │ id │ name                    │ mode│ status  │ ↺    │ uptime │
  *   ├─────────────────────────────┼─────┼─────────┼──────┼────────┤
  *   │ 0  │ icjia-accessibility-backend │ fork│ online  │ 0    │ 1m     │
- *   │ 1  │ icjia-accessibility-docs    │ fork│ online  │ 0    │ 1m     │
  *   └─────────────────────────────┴─────┴─────────┴──────┴────────┘
  *
  * STEP 5: View logs to verify services started correctly
@@ -70,9 +63,6 @@
  * ──────────────────────────
  *   # Test backend API
  *   curl http://localhost:3001/api/health
- *
- *   # Test documentation
- *   curl http://localhost:3002
  *
  * STEP 7: Setup auto-start on server reboot (optional but recommended)
  * ────────────────────────────────────────────────────────────────────
@@ -174,94 +164,6 @@ module.exports = {
       // All stdout output goes here
       // Contains application logs and console.log() output
       out_file: "./logs/backend-out.log",
-
-      // Date format for log timestamps
-      // YYYY-MM-DD HH:mm:ss Z = "2024-01-15 14:30:45 +0000"
-      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-
-      // Merge logs from all instances into one file
-      // true = all output in one file
-      // false = separate files per instance
-      merge_logs: true,
-
-      // Auto-restart the service if it crashes
-      // true = automatically restart on crash
-      // false = do not restart
-      autorestart: true,
-
-      // Maximum number of restarts allowed
-      // If service crashes more than this, PM2 stops trying to restart
-      // 10 = allow up to 10 restart attempts
-      max_restarts: 10,
-
-      // Minimum uptime before restart count resets
-      // If service runs for at least 10 seconds, restart counter resets
-      // This prevents rapid restart loops
-      min_uptime: "10s",
-    },
-    /**
-     * ========================================================================
-     * SERVICE 2: DOCUMENTATION (Docusaurus)
-     * ========================================================================
-     *
-     * This service runs the Docusaurus documentation site that provides:
-     * - Deployment guides
-     * - API documentation
-     * - Setup instructions
-     * - Troubleshooting guides
-     *
-     * Port: 3002
-     * Framework: Docusaurus (React-based static site generator)
-     * Package Manager: Yarn (using workspace)
-     *
-     */
-    {
-      // Service name - used in PM2 commands and logs
-      // Example: pm2 logs icjia-accessibility-docs
-      name: "icjia-accessibility-docs",
-
-      // Script to run
-      // Use npx to run http-server to serve the pre-built static docs
-      // This serves the docs/build directory as static files
-      script: "npx",
-
-      // Arguments to pass to the script
-      // "http-server docs/build -p 3002 -c-1"
-      // This tells http-server to:
-      // 1. Serve the docs/build directory (pre-built Docusaurus output)
-      // 2. Listen on port 3002
-      // 3. Disable caching (-c-1) for development/testing
-      args: "http-server docs/build -p 3002 -c-1",
-
-      // Number of instances to run
-      // 1 = single instance (recommended)
-      // http-server doesn't benefit from multiple instances
-      instances: 1,
-
-      // Execution mode
-      // "fork" = single process (default, recommended)
-      // "cluster" = multiple processes (not needed for http-server)
-      exec_mode: "fork",
-
-      // Watch mode - automatically restart on file changes
-      // false = disabled (recommended for production)
-      watch: false,
-
-      // Environment variables for this service
-      env: {
-        // Set Node environment to production
-        NODE_ENV: "production",
-      },
-
-      // Error log file path
-      // All stderr output goes here
-      // Useful for debugging issues
-      error_file: "./logs/docs-error.log",
-
-      // Output log file path
-      // All stdout output goes here
-      // Contains http-server startup messages and logs
-      out_file: "./logs/docs-out.log",
 
       // Date format for log timestamps
       // YYYY-MM-DD HH:mm:ss Z = "2024-01-15 14:30:45 +0000"

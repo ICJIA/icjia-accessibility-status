@@ -5,24 +5,21 @@
   "type": "module",
   "packageManager": "yarn@1.22.22",
   "workspaces": [
-    ".",
-    "docs"
+    "."
   ],
   "scripts": {
-    "dev": "concurrently \"vite\" \"nodemon --watch server server/index.ts\" \"yarn workspace icjia-accessibility-docs start --no-open\"",
+    "dev": "concurrently \"vite\" \"nodemon --watch server server/index.ts\"",
     "dev:frontend": "vite",
     "dev:backend": "nodemon --watch server server/index.ts",
-    "dev:docs": "yarn workspace icjia-accessibility-docs start",
-    "dev:all": "concurrently \"vite\" \"nodemon --watch server server/index.ts\" \"yarn workspace icjia-accessibility-docs start\"",
-    "build": "vite build && yarn build:docs",
+    "build": "vite build",
     "build:frontend": "vite build",
     "build:backend": "echo 'Backend uses tsx runtime - no build needed'",
-    "build:docs": "yarn workspace icjia-accessibility-docs build",
     "start": "pm2 start ecosystem.config.cjs",
     "stop": "pm2 stop ecosystem.config.cjs",
     "restart": "pm2 restart ecosystem.config.cjs",
     "logs": "pm2 logs icjia-accessibility-backend",
     "status": "pm2 status",
+    "staging": "concurrently \"vite\" \"nodemon --watch server server/index.ts\"",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",

@@ -207,24 +207,6 @@ export function Navigation() {
               <span className="hidden sm:inline">Dashboard</span>
             </Link>
 
-            {/* Documentation link - only visible to authenticated users */}
-            {user && (
-              <a
-                href={
-                  process.env.NODE_ENV === "production"
-                    ? "/docs/"
-                    : import.meta.env.VITE_DOCS_URL || "http://localhost:3002"
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center space-x-2"
-                title="View documentation site"
-              >
-                <BookOpen className="h-5 w-5" />
-                <span className="hidden sm:inline">Docs</span>
-              </a>
-            )}
-
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
