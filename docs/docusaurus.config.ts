@@ -84,15 +84,15 @@ const config: Config = {
           items: [
             {
               label: "Quick Start",
-              to: "docs/quick-start",
+              to: "/docs/docs/quick-start",
             },
             {
               label: "Setup Guide",
-              to: "docs/setup-guide",
+              to: "/docs/docs/setup-guide",
             },
             {
               label: "API Documentation",
-              to: "docs/api/overview",
+              to: "/docs/docs/api/overview",
             },
           ],
         },

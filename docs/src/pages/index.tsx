@@ -14,13 +14,13 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--primary button--lg"
-            to="/docs/quick-start"
+            to="/docs/docs/quick-start"
           >
             Get Started
           </Link>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/intro"
+            to="/docs/docs/intro"
           >
             Learn More
           </Link>
@@ -43,7 +43,7 @@ export default function Home(): JSX.Element {
           <div className="container">
             <div className="row">
               <div className="col col--4">
-                <Link to="/docs/intro" className={styles.featureLink}>
+                <Link to="/docs/docs/intro" className={styles.featureLink}>
                   <div className={styles.featureBox}>
                     <h3>📊 Real-time Scores</h3>
                     <p>
@@ -54,7 +54,7 @@ export default function Home(): JSX.Element {
                 </Link>
               </div>
               <div className="col col--4">
-                <Link to="/docs/intro" className={styles.featureLink}>
+                <Link to="/docs/docs/intro" className={styles.featureLink}>
                   <div className={styles.featureBox}>
                     <h3>📈 Track Progress</h3>
                     <p>
@@ -65,7 +65,7 @@ export default function Home(): JSX.Element {
                 </Link>
               </div>
               <div className="col col--4">
-                <Link to="/docs/intro" className={styles.featureLink}>
+                <Link to="/docs/docs/intro" className={styles.featureLink}>
                   <div className={styles.featureBox}>
                     <h3>🔐 Secure Admin</h3>
                     <p>
