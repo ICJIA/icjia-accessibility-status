@@ -30,12 +30,18 @@ CREATE TABLE IF NOT EXISTS api_keys (
   usage_count integer DEFAULT 0 NOT NULL,
   expires_at timestamptz,
   is_active boolean DEFAULT true NOT NULL,
-  notes text
+  notes text,
+  -- Key rotation fields
+  rotated_from_key_id uuid REFERENCES api_keys(id) ON DELETE SET NULL,
+  grace_period_expires_at timestamptz,
+  updated_at timestamptz DEFAULT now() NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_api_keys_api_key ON api_keys(api_key);
 CREATE INDEX IF NOT EXISTS idx_api_keys_created_by ON api_keys(created_by);
 CREATE INDEX IF NOT EXISTS idx_api_keys_is_active ON api_keys(is_active);
+CREATE INDEX IF NOT EXISTS idx_api_keys_grace_period_expires_at ON api_keys(grace_period_expires_at);
+CREATE INDEX IF NOT EXISTS idx_api_keys_rotated_from ON api_keys(rotated_from_key_id);
 
 -- ============================================================================
 -- API PAYLOADS TABLE (for tracking API submissions)

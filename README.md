@@ -59,6 +59,7 @@ cp .env.sample .env
 #   supabase/migrations/03_add_scans_and_results.sql
 #   supabase/migrations/04_add_scan_violations.sql
 #   supabase/migrations/05_final_setup_and_cleanup.sql
+#   supabase/migrations/06_add_key_rotation_columns.sql
 
 # 4. Start development server (frontend + backend)
 yarn dev
