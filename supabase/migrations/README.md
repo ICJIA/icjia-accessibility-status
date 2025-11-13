@@ -6,11 +6,13 @@ Complete database setup for the ICJIA Accessibility Status Portal. Run these 5 m
 
 Run these **5 migrations in order** on a brand new Supabase project:
 
-1. `01_create_initial_schema.sql` - Core database structure
-2. `02_add_api_keys_and_payloads.sql` - API functionality
-3. `03_add_scans_and_results.sql` - Scanning functionality
-4. `04_add_scan_violations.sql` - Detailed violation reporting
-5. `05_final_setup_and_cleanup.sql` - Final verification and setup
+1. **`01_create_initial_schema.sql`** - Core database structure + RLS policies + admin user
+2. **`02_add_api_keys_and_payloads.sql`** - API functionality
+3. **`03_add_scans_and_results.sql`** - Scanning functionality
+4. **`04_add_scan_violations.sql`** - Detailed violation reporting
+5. **`05_final_setup_and_cleanup.sql`** - Final verification and setup
+
+**All migrations are idempotent** - safe to run multiple times on the same database.
 
 ---
 
@@ -42,12 +44,12 @@ node scripts/apply-migration.js supabase/migrations/05_final_setup_and_cleanup.s
 
 ### 01: `01_create_initial_schema.sql`
 
-**Purpose**: Creates the complete initial database schema.
+**Purpose**: Creates the complete initial database schema with RLS policies for custom cookie-based authentication.
 
 **Tables created**:
 
 - `admin_users` - User authentication
-- `sessions` - Session management
+- `sessions` - Session management (custom cookie-based, not Supabase Auth)
 - `sites` - Website tracking
 - `score_history` - Accessibility score trends
 - `documentation` - Help content
@@ -55,10 +57,21 @@ node scripts/apply-migration.js supabase/migrations/05_final_setup_and_cleanup.s
 **What it does**:
 
 - Creates all core database tables with indexes
-- Sets up Row Level Security (RLS) policies
-- Creates admin user (username: admin, password: blank)
+- Sets up Row Level Security (RLS) policies for custom authentication:
+  - `admin_users`: Allows anonymous reads (for login) and updates (for initial password setup)
+  - `sessions`: Allows anonymous creates and reads (for custom cookie-based auth)
+  - `sites`, `score_history`, `documentation`: Public read access
+- Creates admin user (username: `admin`, password: blank - must be set on first login)
 - Populates 4 documentation sections
 - Database starts with no sites (add via admin interface)
+
+**RLS Policy Details**:
+
+- ✅ Allows anonymous users to authenticate (read admin_users)
+- ✅ Allows anonymous users to set initial password (update admin_users)
+- ✅ Allows anonymous users to create and read sessions (custom cookie-based auth)
+- ✅ Allows public read access to sites and documentation
+- ✅ Does NOT use Supabase Auth - uses custom cookie-based sessions
 
 **Idempotent**: Yes - safe to run multiple times
 
@@ -162,7 +175,7 @@ After running all 5 migrations, you should have **11 tables**:
 
 After migrations are complete:
 
-1. **Rebuild Docker**: `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d`
+1. **Start Development Server**: `yarn dev`
 2. **Access Frontend**: http://localhost:5173
 3. **Login**: Username: `admin`, Password: (blank - set on first login)
 4. **Add Sites**: Use admin interface to add websites
