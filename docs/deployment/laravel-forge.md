@@ -458,7 +458,6 @@ pm2 logs
 
 # Check if ports are listening
 lsof -i :3001
-lsof -i :3002
 ```
 
 ## Step 9: Verify Deployment

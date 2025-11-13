@@ -9,6 +9,7 @@ Troubleshooting guide for common problems.
 **Problem:** "Port 5173 is already in use" or similar error
 
 **Solution:**
+
 ```bash
 # Find process using port
 lsof -i :5173
@@ -24,6 +25,7 @@ kill -9 <PID>
 **Problem:** "Cannot find module" error
 
 **Solution:**
+
 ```bash
 # Reinstall dependencies
 rm -rf node_modules
@@ -39,6 +41,7 @@ yarn install
 **Problem:** Type checking errors
 
 **Solution:**
+
 ```bash
 # Run type checking
 yarn typecheck
@@ -55,6 +58,7 @@ yarn typecheck src/pages/Login.tsx
 **Problem:** Changes not reflecting in browser
 
 **Solution:**
+
 ```bash
 # Restart dev server
 # Press Ctrl+C and run yarn dev again
@@ -73,6 +77,7 @@ yarn typecheck src/pages/Login.tsx
 **Problem:** "Cannot start backend" or connection errors
 
 **Solution:**
+
 ```bash
 # Check Node.js version
 node --version  # Should be 20+
@@ -92,6 +97,7 @@ NODE_DEBUG=* yarn dev:backend
 **Problem:** "Cannot GET /api/sites" or 404 errors
 
 **Solution:**
+
 ```bash
 # Verify backend is running
 curl http://localhost:3001/api
@@ -111,6 +117,7 @@ curl http://localhost:3001/api
 **Problem:** "Access to XMLHttpRequest blocked by CORS policy"
 
 **Solution:**
+
 ```bash
 # Check Vite proxy configuration
 # vite.config.ts should have:
@@ -132,6 +139,7 @@ yarn dev
 **Problem:** "Failed to connect to database" or "ECONNREFUSED"
 
 **Solution:**
+
 ```bash
 # Verify Supabase credentials in .env
 cat .env | grep VITE_SUPABASE
@@ -151,6 +159,7 @@ yarn dev:backend
 **Problem:** Cannot log in, admin user not found
 
 **Solution:**
+
 ```bash
 # Re-run migration file
 # Go to Supabase SQL Editor
@@ -167,6 +176,7 @@ yarn dev:backend
 **Problem:** Login fails with session creation error
 
 **Solution:**
+
 ```bash
 # Verify migrations were run
 # Check all tables exist in Supabase
@@ -186,6 +196,7 @@ yarn dev:backend
 **Problem:** "relation does not exist" error
 
 **Solution:**
+
 ```bash
 # Verify all migrations were run
 # Check Supabase Table Editor
@@ -204,6 +215,7 @@ yarn dev:backend
 **Problem:** Cannot log in with correct username/password
 
 **Solution:**
+
 ```bash
 # Verify admin user exists
 # Check admin_users table in Supabase
@@ -223,6 +235,7 @@ yarn dev:backend
 **Problem:** Logged out after page refresh
 
 **Solution:**
+
 ```bash
 # Check cookies are enabled
 # Browser settings → Privacy → Cookies
@@ -242,6 +255,7 @@ yarn dev:backend
 **Problem:** Getting 401 errors despite being logged in
 
 **Solution:**
+
 ```bash
 # Check session hasn't expired
 # Sessions expire after 15 days
@@ -263,6 +277,7 @@ yarn dev:backend
 **Problem:** App loads but shows nothing
 
 **Solution:**
+
 ```bash
 # Check browser console for errors
 # Open DevTools → Console tab
@@ -285,6 +300,7 @@ curl http://localhost:3001/api
 **Problem:** CSS not loading or styles look wrong
 
 **Solution:**
+
 ```bash
 # Check Tailwind CSS is working
 # Verify tailwind.config.ts exists
@@ -304,6 +320,7 @@ yarn dev
 **Problem:** Links don't navigate or routes not working
 
 **Solution:**
+
 ```bash
 # Check React Router configuration
 # Look in src/App.tsx
@@ -325,6 +342,7 @@ yarn dev
 **Problem:** PM2 shows "stopped" or "errored"
 
 **Solution:**
+
 ```bash
 # Check PM2 logs
 pm2 logs
@@ -347,6 +365,7 @@ pm2 monit
 **Problem:** Getting "Bad Gateway" or connection refused
 
 **Solution:**
+
 ```bash
 # Test Nginx configuration
 sudo nginx -t
@@ -354,7 +373,6 @@ sudo nginx -t
 # Check upstream services running
 curl http://localhost:5173
 curl http://localhost:3001/api
-curl http://localhost:3002
 
 # Check Nginx logs
 sudo tail -f /var/log/nginx/error.log
@@ -368,6 +386,7 @@ sudo systemctl restart nginx
 **Problem:** "SSL certificate problem" or HTTPS not working
 
 **Solution:**
+
 ```bash
 # Verify certificate exists
 sudo ls -la /etc/letsencrypt/live/example.com/
@@ -387,11 +406,13 @@ sudo nginx -t
 If you can't find a solution:
 
 1. **Check the logs**
+
    - Frontend: Browser DevTools Console
    - Backend: Terminal output or `pm2 logs`
    - Database: Supabase logs
 
 2. **Search documentation**
+
    - [Setup Guide](../setup-guide)
    - [Authentication](../authentication)
    - [API Documentation](../api/overview)
@@ -405,4 +426,3 @@ If you can't find a solution:
 - [Authentication Errors](./authentication-errors) - Auth-specific issues
 - [Database Errors](./database-errors) - Database-specific issues
 - [Setup Guide](../setup-guide) - Setup instructions
-

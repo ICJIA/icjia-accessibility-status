@@ -40,10 +40,9 @@ cp .env.sample .env
 ## Step 4: Start Development Servers
 
 ```bash
-# This runs all three services:
+# This runs both services:
 # - Frontend: http://localhost:5173
 # - Backend: http://localhost:3001
-# - Docs: http://localhost:3002
 yarn dev
 ```
 
@@ -56,11 +55,10 @@ yarn dev
 
 ## What's Running?
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| **Frontend** | http://localhost:5173 | React app with dashboard |
-| **Backend API** | http://localhost:3001 | Express API server |
-| **Documentation** | http://localhost:3002 | This documentation site |
+| Service         | URL                   | Purpose                  |
+| --------------- | --------------------- | ------------------------ |
+| **Frontend**    | http://localhost:5173 | React app with dashboard |
+| **Backend API** | http://localhost:3001 | Express API server       |
 
 ## Next Steps
 
@@ -72,19 +70,22 @@ yarn dev
 ## Troubleshooting
 
 **"Admin user NOT found" error?**
+
 - Re-run the migration file `supabase/migrations/step_1_create_initial_schema.sql`
 
 **"Failed to create session" error?**
+
 - Check that your `.env` file has correct Supabase credentials
 - Verify the migration files were run successfully
 
 **Backend won't start?**
+
 - Check that port 3001 is not in use
 - Verify Node.js 20+ is installed: `node --version`
 
 **Database connection errors?**
+
 - Verify `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env`
 - Check that your Supabase project is active
 
 See [Troubleshooting](./troubleshooting/common-issues) for more help.
-

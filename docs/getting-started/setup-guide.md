@@ -77,6 +77,7 @@ You need to run **THREE SQL files** in order:
 5. Click **"Run"**
 
 Expected output:
+
 ```
 NOTICE: Created admin user with bcrypt-hashed password
 NOTICE: Created 6 sample sites
@@ -92,6 +93,7 @@ NOTICE: Database setup complete!
 4. Click **"Run"**
 
 Expected output:
+
 ```
 NOTICE: ✅ api_keys table created successfully
 NOTICE: ✅ RLS enabled on api_keys table
@@ -128,9 +130,9 @@ yarn dev
 ```
 
 This starts:
+
 - **Frontend**: http://localhost:5173
 - **Backend**: http://localhost:3001
-- **Documentation**: http://localhost:3002
 
 ## Step 8: Initial Admin Setup
 
@@ -173,6 +175,7 @@ node verify-api.js
 ```
 
 Expected output:
+
 ```
 🚀 Starting API Upload Tests...
 ✅ Test 1: Single Site Upload - PASSED
@@ -215,4 +218,3 @@ yarn reset:app        # Complete database wipe
 ## Troubleshooting
 
 See [Troubleshooting Guide](./troubleshooting/common-issues) for common issues and solutions.
-

@@ -191,7 +191,6 @@ pm2 status
 # Check if ports are listening
 sudo lsof -i :5173
 sudo lsof -i :3001
-sudo lsof -i :3002
 
 # Restart services if needed
 pm2 restart all
