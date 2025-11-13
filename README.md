@@ -58,30 +58,29 @@ yarn typecheck        # Run TypeScript type checking
 
 ## 🚀 Production Deployment
 
-### Laravel Forge
+### Laravel Forge (Recommended)
 
-For detailed Laravel Forge deployment instructions, see **[docs/deployment/LARAVEL_FORGE_DEPLOYMENT_SUMMARY.md](docs/deployment/LARAVEL_FORGE_DEPLOYMENT_SUMMARY.md)**.
+For detailed Laravel Forge deployment instructions, see **[docs/deployment/laravel-forge.md](docs/deployment/laravel-forge.md)**.
 
 **Quick steps:**
 
-1. Create a new site in Laravel Forge
+1. Create a new Node.js site in Laravel Forge
 2. Set Node.js version to 20+
 3. Configure environment variables from `.env.sample`
-4. Run database migrations
-5. Deploy using Git
+4. Run database migrations (01-05 in order)
+5. Deploy using Git with PM2 process management
 
-### Coolify
+**Deployment Methods:**
 
-For detailed Coolify deployment instructions, see **[docs/deployment/COOLIFY_QUICK_START.md](docs/deployment/COOLIFY_QUICK_START.md)**.
+- `yarn production:pm2` - Full production deployment with PM2 (recommended)
+- `yarn production:simple` - Test production build without PM2
 
-**Quick steps:**
+### Other Deployment Options
 
-1. Create a new application in Coolify
-2. Connect your Git repository
-3. Set Node.js version to 20+
-4. Configure environment variables
-5. Run database migrations
-6. Deploy
+For other deployment options, see **[docs/deployment/overview.md](docs/deployment/overview.md)**:
+
+- Ubuntu Server with PM2 + Nginx
+- Cloud platforms (Vercel, Heroku, AWS, DigitalOcean)
 
 ## 📚 Documentation
 
@@ -112,16 +111,10 @@ All documentation is available as Markdown files in the `/docs` directory, organ
 - **[Setup Documentation](docs/development/SETUP.md)** - Development setup details
 - **[Quick Start Summary](docs/development/QUICK_START_SETUP_SUMMARY.md)** - Quick reference
 
-### ⚙️ Configuration
-
-- **[Environment Variables](docs/configuration/env-configuration.md)** - Environment configuration guide
-- **[Environment Audit](docs/configuration/env-sample-audit.md)** - Environment setup verification
-
 ### 🚢 Deployment
 
 - **[Deployment Overview](docs/deployment/overview.md)** - Deployment options and strategies
-- **[Laravel Forge Setup](docs/deployment/LARAVEL_FORGE_DEPLOYMENT_SUMMARY.md)** - Forge deployment guide
-- **[Coolify Setup](docs/deployment/COOLIFY_QUICK_START.md)** - Coolify deployment guide
+- **[Laravel Forge Setup](docs/deployment/laravel-forge.md)** - Complete Forge deployment guide
 - **[PM2 Configuration](docs/deployment/pm2-ecosystem-config.md)** - PM2 setup and configuration
 - **[Nginx Configuration](docs/deployment/nginx.md)** - Nginx reverse proxy setup
 - **[Production Deployment](docs/deployment/production.md)** - Production deployment checklist
@@ -146,7 +139,6 @@ All documentation is available as Markdown files in the `/docs` directory, organ
 
 - **[Feature Summary](docs/project/FEATURE_SUMMARY.md)** - Current features overview
 - **[Project Roadmap](docs/project/FUTURE_ROADMAP.md)** - Future features and roadmap
-- **[Monorepo Setup](docs/setup/monorepo-setup.md)** - Monorepo structure and setup
 
 ## Prerequisites
 

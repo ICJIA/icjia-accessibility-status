@@ -17,9 +17,8 @@ This guide uses a **single domain** (`accessibility.icjia.app`) to serve:
 
 - **Frontend** (React SPA) at `/`
 - **Backend API** at `/api/`
-- **Documentation** at `/docs/`
 
-All three services run on the same server but on different ports (5173, 3001, 3002), with Nginx routing traffic to the appropriate service based on the URL path.
+Both services run on the same server but on different ports (5173, 3001), with Nginx routing traffic to the appropriate service based on the URL path.
 
 ## Step 1: Create a New Site in Forge
 
@@ -145,11 +144,11 @@ git pull origin main
 echo "Installing dependencies..."
 yarn install --production
 
-# Build frontend and documentation
-echo "Building frontend and documentation..."
+# Build frontend
+echo "Building frontend..."
 yarn build
 
-# Verify builds completed
+# Verify build completed
 if [ ! -d "dist" ]; then
   echo "ERROR: Frontend build failed - dist directory not found"
   exit 1
@@ -169,7 +168,6 @@ pm2 status
 echo "=== Deployment Complete ==="
 echo "Frontend: https://accessibility.icjia.app"
 echo "API: https://accessibility.icjia.app/api/health"
-echo "Docs: https://accessibility.icjia.app/docs"
 ```
 
 3. **Click "Save"**
@@ -237,21 +235,6 @@ server {
         proxy_read_timeout 60s;
     }
 
-    # Documentation routes - proxy to Docusaurus (port 3002)
-    location /docs/ {
-        proxy_pass http://127.0.0.1:3002/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeouts for docs
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-
     # Deny access to sensitive files
     location ~ /\. {
         deny all;
@@ -294,8 +277,7 @@ server {
 - The configuration routes traffic based on URL path:
   - `/` → Frontend (React SPA)
   - `/api/` → Backend (Express API)
-  - `/docs/` → Documentation (Docusaurus)
-- All three services run on localhost but on different ports
+- Both services run on localhost but on different ports (5173 and 3001)
 
 ## Step 6: Install PM2 and Configure
 
@@ -339,25 +321,6 @@ module.exports = {
       max_restarts: 10,
       min_uptime: '10s',
       max_memory_restart: '500M'
-    },
-    {
-      name: 'icjia-accessibility-docs',
-      script: 'yarn',
-      args: 'workspace icjia-accessibility-docs start',
-      instances: 1,
-      exec_mode: 'fork',
-      watch: false,
-      env: {
-        NODE_ENV: 'production',
-        PORT: 3002
-      },
-      error_file: '/home/forge/.pm2/logs/docs-error.log',
-      out_file: '/home/forge/.pm2/logs/docs-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      merge_logs: true,
-      autorestart: true,
-      max_restarts: 10,
-      min_uptime: '10s'
     }
   ]
 };
@@ -510,21 +473,13 @@ lsof -i :3002
    - Should return JSON with status information
    - Verifies backend is running and connected to Supabase
 
-3. **Check documentation:** https://accessibility.icjia.app/docs
-
-   - Should display the Docusaurus documentation site
-   - Verify sidebar and navigation work
-
-4. **Check logs for errors:**
+3. **Check logs for errors:**
 
 ```bash
 ssh forge@your-server-ip
 
 # View backend logs
 pm2 logs icjia-accessibility-backend
-
-# View docs logs
-pm2 logs icjia-accessibility-docs
 
 # View Nginx logs
 sudo tail -f /var/log/nginx/accessibility.icjia.app-error.log
@@ -543,7 +498,6 @@ pm2 status
 
 # View logs
 pm2 logs icjia-accessibility-backend
-pm2 logs icjia-accessibility-docs
 
 # Restart services
 pm2 restart all
@@ -556,7 +510,7 @@ cat /home/forge/accessibility.icjia.app/.env
 
 - Missing `.env` file - Create it with `cp .env.sample .env`
 - Missing Supabase credentials - Check `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
-- Port already in use - Check with `lsof -i :3001` and `lsof -i :3002`
+- Port already in use - Check with `lsof -i :3001`
 
 ### Build failures
 
@@ -589,13 +543,12 @@ ls -la dist/
 
 ### Port conflicts
 
-Ensure ports 3001 and 3002 are not in use:
+Ensure port 3001 is not in use:
 
 ```bash
 lsof -i :3001
-lsof -i :3002
 
-# If ports are in use, kill the process
+# If port is in use, kill the process
 kill -9 <PID>
 
 # Then restart PM2
