@@ -18,15 +18,14 @@ Overview of the ICJIA Accessibility Portal system architecture.
 ├─────────────────────────────────────────────────────────────┤
 │  /          →  Frontend (5173)                              │
 │  /api/      →  Backend (3001)                               │
-│  /docs/     →  Docs (3002)                                  │
 └────────────────────────┬────────────────────────────────────┘
                          │
         ┌────────────────┼────────────────┐
-        │                │                │
-        ▼                ▼                ▼
-   Frontend         Backend API       Documentation
-   (Vite)          (Express)          (Docusaurus)
-   Port 5173       Port 3001          Port 3002
+        │                │
+        ▼                ▼
+   Frontend         Backend API
+   (Vite)          (Express)
+   Port 5173       Port 3001
 ```
 
 ## Frontend Architecture
@@ -141,44 +140,14 @@ server/
 - ✅ API key hashing
 - ✅ Audit logging
 
-## Documentation Architecture
-
-### Technology Stack
-
-- **Framework**: Docusaurus 3
-- **Language**: TypeScript
-- **Build Tool**: Webpack
-- **Styling**: Custom CSS with dark theme
-
-### Documentation Structure
-
-```
-docs/
-├── docs/              # Documentation markdown files
-│   ├── intro.md
-│   ├── quick-start.md
-│   ├── setup-guide.md
-│   ├── authentication.md
-│   ├── reset-scripts.md
-│   ├── api/
-│   ├── deployment/
-│   └── troubleshooting/
-├── src/
-│   └── css/
-│       └── custom.css # Custom styling
-├── sidebars.ts        # Sidebar configuration
-└── docusaurus.config.ts # Docusaurus configuration
-```
-
 ## Deployment Architecture
 
 ### Development Environment
 
 ```
 Local Machine
-├── Frontend (yarn dev)      → Port 5173
-├── Backend (yarn dev)       → Port 3001
-└── Docs (yarn dev:docs)     → Port 3002
+├── Frontend (yarn dev)      → Port 5173 (Vite dev server)
+└── Backend (yarn dev)       → Port 3001 (Express with nodemon)
 ```
 
 ### Production Environment
@@ -186,13 +155,10 @@ Local Machine
 ```
 Ubuntu Server
 ├── Nginx (Port 80/443)
-│   ├─ / → Frontend (5173)
-│   ├─ /api/ → Backend (3001)
-│   └─ /docs/ → Docs (3002)
+│   ├─ / → Frontend (5173, static files from dist/)
+│   └─ /api/ → Backend (3001, Express API)
 ├── PM2 Process Manager
-│   ├─ accessibility-frontend
-│   ├─ accessibility-backend
-│   └─ accessibility-docs
+│   └─ icjia-accessibility-backend (Express on port 3001)
 └── Supabase Database
     └─ PostgreSQL with RLS
 ```
@@ -279,7 +245,6 @@ Ubuntu Server
 
 - Multiple frontend instances behind load balancer
 - Multiple backend instances with shared database
-- Multiple docs instances
 
 ### Vertical Scaling
 
@@ -314,4 +279,3 @@ Ubuntu Server
 - [Development Setup](./development-setup) - Development environment
 - [Deployment Overview](./deployment/overview) - Deployment guide
 - [Database Schema](./database-schema) - Database structure
-

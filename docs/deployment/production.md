@@ -81,7 +81,6 @@ git clone https://github.com/ICJIA/icjia-accessibility-status.git .
 
 # Install dependencies
 yarn install
-cd docs && yarn install && cd ..
 ```
 
 ## Step 3: Configure Environment
@@ -115,12 +114,11 @@ NODE_ENV=production
 ## Step 4: Build Application
 
 ```bash
-# Build all services
+# Build frontend
 yarn build
 
-# Verify builds
+# Verify build
 ls -la dist/
-ls -la docs/build/
 ```
 
 ## Step 5: Configure PM2
@@ -191,7 +189,7 @@ Edit `/etc/nginx/sites-available/icjia-accessibility.conf`:
 server {
     listen 80;
     server_name example.com www.example.com;
-    
+
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
 }
@@ -199,11 +197,11 @@ server {
 server {
     listen 443 ssl http2;
     server_name example.com www.example.com;
-    
+
     # SSL certificates
     ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
-    
+
     # ... rest of configuration
 }
 ```
@@ -219,13 +217,11 @@ sudo systemctl status nginx
 
 # Test endpoints
 curl http://localhost:5173
-curl http://localhost:3001/api
-curl http://localhost:3002
+curl http://localhost:3001/api/health
 
 # Test via domain
 curl https://example.com
-curl https://example.com/api
-curl https://example.com/docs
+curl https://example.com/api/health
 ```
 
 ## Step 9: Setup Monitoring
@@ -265,7 +261,6 @@ git pull origin main
 
 # Install dependencies
 yarn install
-cd docs && yarn install && cd ..
 
 # Build
 yarn build
@@ -337,4 +332,3 @@ sudo systemctl restart nginx
 - [Deployment Overview](./overview) - Deployment guide
 - [Nginx Configuration](./nginx) - Nginx setup
 - [PM2 Configuration](./pm2) - Process management
-

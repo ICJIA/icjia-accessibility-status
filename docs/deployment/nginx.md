@@ -11,8 +11,7 @@ Client Request
     ↓
 Nginx (Port 80/443)
     ├─ / ──────────→ Frontend (5173)
-    ├─ /api/ ──────→ Backend (3001)
-    └─ /docs/ ─────→ Docs (3002)
+    └─ /api/ ──────→ Backend (3001)
 ```
 
 ## Basic Configuration
@@ -32,10 +31,6 @@ upstream frontend {
 
 upstream backend {
     server localhost:3001;
-}
-
-upstream docs {
-    server localhost:3002;
 }
 
 server {
@@ -60,16 +55,6 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # Documentation
-    location /docs/ {
-        proxy_pass http://docs/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
     }
 }
 ```
@@ -115,10 +100,6 @@ server {
         server localhost:3001;
     }
 
-    upstream docs {
-        server localhost:3002;
-    }
-
     # Frontend (root)
     location / {
         proxy_pass http://frontend;
@@ -137,21 +118,11 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         # Timeouts for long-running requests
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
-    }
-
-    # Documentation
-    location /docs/ {
-        proxy_pass http://docs/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
     }
 
     # Deny access to sensitive files
@@ -212,6 +183,7 @@ sudo systemctl status nginx
 **Problem:** Nginx can't connect to upstream services
 
 **Solution:**
+
 ```bash
 # Verify services are running
 pm2 status
@@ -230,6 +202,7 @@ pm2 restart all
 **Problem:** Upstream service is down or not responding
 
 **Solution:**
+
 ```bash
 # Check service logs
 pm2 logs
@@ -246,6 +219,7 @@ sudo tail -f /var/log/nginx/error.log
 **Problem:** SSL certificate not working
 
 **Solution:**
+
 ```bash
 # Verify certificate exists
 sudo ls -la /etc/letsencrypt/live/example.com/
@@ -262,6 +236,7 @@ sudo certbot renew --dry-run
 **Problem:** Requests are slow
 
 **Solution:**
+
 ```bash
 # Increase timeouts in Nginx config
 proxy_connect_timeout 60s;
@@ -310,4 +285,3 @@ upstream backend {
 - [Deployment Overview](./overview) - Deployment guide
 - [Production Deployment](./production) - Production setup
 - [PM2 Configuration](./pm2) - Process management
-

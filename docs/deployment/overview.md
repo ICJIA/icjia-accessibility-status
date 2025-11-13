@@ -100,10 +100,12 @@ NODE_ENV=production
 ## Database Setup
 
 1. Create Supabase project
-2. Run all migration files:
-   - `step_1_create_initial_schema.sql`
-   - `step_2_api_keys_and_rls_fixes.sql`
-   - `step_3_refactor_to_api_payloads.sql` (if upgrading)
+2. Run all migration files in order:
+   - `01_create_initial_schema.sql`
+   - `02_add_api_keys_and_payloads.sql`
+   - `03_add_scans_and_results.sql`
+   - `04_add_scan_violations.sql`
+   - `05_final_setup_and_cleanup.sql`
 3. Verify all tables created successfully
 
 ## Building for Production
@@ -236,7 +238,6 @@ Run multiple instances behind a load balancer:
 
 - Multiple frontend instances
 - Multiple backend instances
-- Multiple docs instances
 
 ### Vertical Scaling
 
