@@ -319,6 +319,5 @@ app.listen(PORT, () => {
   console.log("\n");
 
   // Start automatic key deactivation job
-  // TODO: Enable after running migration 06
-  // startKeyDeactivationJob();
+  startKeyDeactivationJob();
 });
