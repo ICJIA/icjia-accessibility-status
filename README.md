@@ -155,10 +155,6 @@ All documentation is available as Markdown files in the `/docs` directory, organ
 - **Process Management**: PM2 (production)
 - **Documentation**: Markdown files in `/docs` directory
 
-## License
-
-See LICENSE file for details.
-
 ---
 
 © 2025 Illinois Criminal Justice Information Authority (ICJIA). All rights reserved.
