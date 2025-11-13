@@ -256,7 +256,67 @@ app.listen(PORT, () => {
   // Extract hostname from FRONTEND_URL or use localhost
   const frontendUrl = new URL(FRONTEND_URL);
   const hostname = frontendUrl.hostname;
-  console.log(`🚀 Server running on http://${hostname}:${PORT}`);
+
+  // Print startup banner
+  console.log("\n");
+  console.log(
+    "╔════════════════════════════════════════════════════════════════╗"
+  );
+  console.log(
+    "║                                                                ║"
+  );
+  console.log(
+    "║   🚀 ICJIA Accessibility Status - Development Server Started   ║"
+  );
+  console.log(
+    "║                                                                ║"
+  );
+  console.log(
+    "╚════════════════════════════════════════════════════════════════╝"
+  );
+  console.log("\n");
+
+  console.log("📍 ENDPOINTS:");
+  console.log(`   Frontend:  http://localhost:5173`);
+  console.log(`   Backend:   http://${hostname}:${PORT}`);
+  console.log(`   Health:    http://${hostname}:${PORT}/api/health`);
+  console.log("\n");
+
+  console.log("🔐 ADMIN PANEL:");
+  console.log(`   URL:       http://localhost:5173/admin`);
+  console.log(`   Username:  admin`);
+  console.log(
+    `   Password:  (leave blank on first login, then set your password)`
+  );
+  console.log("\n");
+
+  console.log("📝 GETTING STARTED:");
+  console.log(`   1. Open http://localhost:5173/admin in your browser`);
+  console.log(`   2. Login with username 'admin' (no password on first login)`);
+  console.log(`   3. Set a new password when prompted`);
+  console.log(`   4. Click 'Add Site' to start adding websites to track`);
+  console.log(`   5. Enter site details (name, URL, etc.)`);
+  console.log(`   6. View dashboard at http://localhost:5173`);
+  console.log("\n");
+
+  console.log("📊 DASHBOARD:");
+  console.log(`   URL:       http://localhost:5173`);
+  console.log(
+    `   Features:  View accessibility scores, export data (JSON/CSV/Markdown)`
+  );
+  console.log("\n");
+
+  console.log("💡 USEFUL COMMANDS:");
+  console.log(`   yarn lint              - Run ESLint`);
+  console.log(`   yarn typecheck         - Run TypeScript type checking`);
+  console.log(`   yarn seed              - Populate database with sample data`);
+  console.log(`   yarn reset:users       - Reset all users`);
+  console.log(`   yarn reset:app         - Reset entire application`);
+  console.log("\n");
+
+  console.log("🛑 TO STOP THE SERVER:");
+  console.log(`   Press Ctrl+C`);
+  console.log("\n");
 
   // Start automatic key deactivation job
   startKeyDeactivationJob();
