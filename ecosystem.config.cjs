@@ -57,7 +57,6 @@
  *
  *   Or view specific service logs:
  *   pm2 logs icjia-accessibility-backend
- *   pm2 logs icjia-accessibility-docs
  *
  * STEP 6: Test the services
  * ──────────────────────────
@@ -205,12 +204,11 @@ module.exports = {
  * 1. Run: yarn build
  * 2. This creates dist/ directory with static HTML/CSS/JS files
  * 3. Nginx serves these files directly (no Node.js process needed)
- * 4. Nginx also acts as reverse proxy for backend (3001) and docs (3002)
+ * 4. Nginx also acts as reverse proxy for backend (3001)
  *
  * Nginx Configuration:
  * - / → serves frontend from dist/
  * - /api/* → proxies to backend on port 3001
- * - /docs/* → proxies to docs on port 3002
  *
  * ============================================================================
  * ARCHITECTURE OVERVIEW
@@ -220,8 +218,7 @@ module.exports = {
  *     ↓
  * Nginx (port 80/443)
  *     ├─ / → Frontend (static files from dist/)
- *     ├─ /api/* → Backend (port 3001, managed by PM2)
- *     └─ /docs/* → Docs (port 3002, managed by PM2)
+ *     └─ /api/* → Backend (port 3001, managed by PM2)
  *
  * ============================================================================
  * DEPLOYMENT WORKFLOW
@@ -253,7 +250,7 @@ module.exports = {
  *
  * Q: Services won't start
  * A: Check logs with: pm2 logs
- *    Verify ports 3001 and 3002 are available: lsof -i :3001
+ *    Verify port 3001 is available: lsof -i :3001
  *    Check environment variables are set correctly
  *
  * Q: Services keep restarting
