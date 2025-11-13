@@ -13,10 +13,12 @@ import { useTheme } from "../../contexts/ThemeContext";
  * @typedef {Object} GaugeChartProps
  * @property {number} score - The accessibility score (0-100)
  * @property {string} label - Label to display below the gauge
+ * @property {string} [subtitle] - Optional subtitle (e.g., last scan time)
  */
 interface GaugeChartProps {
   score: number;
   label: string;
+  subtitle?: string;
 }
 
 /**
@@ -37,7 +39,7 @@ interface GaugeChartProps {
  * @example
  * <GaugeChart score={92} label="Overall Score" />
  */
-export function GaugeChart({ score, label }: GaugeChartProps) {
+export function GaugeChart({ score, label, subtitle }: GaugeChartProps) {
   const { isDark } = useTheme();
 
   const getColor = (score: number) => {
@@ -77,6 +79,11 @@ export function GaugeChart({ score, label }: GaugeChartProps) {
         <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
           {label}
         </div>
+        {subtitle && (
+          <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+            {subtitle}
+          </div>
+        )}
       </div>
     </div>
   );

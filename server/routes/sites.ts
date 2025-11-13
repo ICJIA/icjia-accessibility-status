@@ -84,44 +84,6 @@ router.get("/:id/history", async (req, res) => {
 });
 
 /**
- * GET /api/sites/:id/payloads
- * Get all API payloads for a specific site (admin-only)
- */
-router.get("/:id/payloads", requireAuth, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const { data: payloads, error } = await supabase
-      .from("api_payloads")
-      .select(
-        `
-        id,
-        payload_id,
-        description,
-        payload_size,
-        created_at,
-        created_by_user,
-        api_key_id,
-        admin_users:created_by_user (username, email),
-        api_keys:api_key_id (key_name, key_prefix, key_suffix)
-      `
-      )
-      .eq("site_id", id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching payloads:", error);
-      return res.status(500).json({ error: "Failed to fetch payloads" });
-    }
-
-    return res.json({ payloads });
-  } catch (error) {
-    console.error("Get payloads error:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-/**
  * GET /api/sites/:id/scans
  * Get all scans for a specific site (admin-only)
  */
@@ -153,6 +115,7 @@ router.post("/", requireAuth, async (req, res) => {
       title,
       description,
       url,
+      sitemap_url,
       documentation_url,
       axe_score,
       lighthouse_score,
@@ -160,28 +123,43 @@ router.post("/", requireAuth, async (req, res) => {
       lighthouse_last_updated,
     } = req.body;
 
-    if (
-      !title ||
-      !description ||
-      !url ||
-      axe_score === undefined ||
-      lighthouse_score === undefined ||
-      !axe_last_updated ||
-      !lighthouse_last_updated
-    ) {
-      return res.status(400).json({ error: "Missing required fields" });
+    // Validate required fields
+    if (!title || !description || !url) {
+      return res
+        .status(400)
+        .json({ error: "Missing required fields: title, description, url" });
     }
 
+    // Validate URL format
+    try {
+      new URL(url);
+      if (sitemap_url) new URL(sitemap_url);
+      if (documentation_url) new URL(documentation_url);
+    } catch (e) {
+      return res.status(400).json({ error: "Invalid URL format" });
+    }
+
+    // Use provided scores or default to 0
+    const finalAxeScore = axe_score !== undefined ? axe_score : 0;
+    const finalLighthouseScore =
+      lighthouse_score !== undefined ? lighthouse_score : 0;
+
+    // Validate score ranges
     if (
-      axe_score < 0 ||
-      axe_score > 100 ||
-      lighthouse_score < 0 ||
-      lighthouse_score > 100
+      finalAxeScore < 0 ||
+      finalAxeScore > 100 ||
+      finalLighthouseScore < 0 ||
+      finalLighthouseScore > 100
     ) {
       return res
         .status(400)
         .json({ error: "Scores must be between 0 and 100" });
     }
+
+    // Use provided dates or current date
+    const now = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+    const finalAxeLastUpdated = axe_last_updated || now;
+    const finalLighthouseLastUpdated = lighthouse_last_updated || now;
 
     const { data: newSite, error } = await supabase
       .from("sites")
@@ -190,11 +168,12 @@ router.post("/", requireAuth, async (req, res) => {
           title,
           description,
           url,
+          sitemap_url: sitemap_url || null,
           documentation_url: documentation_url || null,
-          axe_score,
-          lighthouse_score,
-          axe_last_updated,
-          lighthouse_last_updated,
+          axe_score: finalAxeScore,
+          lighthouse_score: finalLighthouseScore,
+          axe_last_updated: finalAxeLastUpdated,
+          lighthouse_last_updated: finalLighthouseLastUpdated,
         },
       ])
       .select()

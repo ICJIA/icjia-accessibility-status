@@ -18,6 +18,7 @@ import {
   BookOpen,
   Home,
   Key,
+  Plus,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -342,6 +343,14 @@ export function Navigation() {
                     >
                       <Key className="h-4 w-4" />
                       <span>API Keys</span>
+                    </Link>
+                    <Link
+                      to="/admin/sites/new"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Site</span>
                     </Link>
 
                     {/* Logout */}

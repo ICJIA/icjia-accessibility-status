@@ -31,6 +31,12 @@ export async function requireAuth(
       "[Auth] Checking session token:",
       sessionToken ? "present" : "missing"
     );
+    console.log("[Auth] All cookies:", req.cookies);
+    console.log("[Auth] Request headers:", {
+      origin: req.get("origin"),
+      referer: req.get("referer"),
+      cookie: req.get("cookie"),
+    });
 
     if (!sessionToken) {
       console.log("[Auth] No session token found");

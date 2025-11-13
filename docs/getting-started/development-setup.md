@@ -18,9 +18,6 @@ cd icjia-accessibility-status
 
 # Install dependencies
 yarn install
-
-# Install docs dependencies
-cd docs && yarn install && cd ..
 ```
 
 ## Development Commands
@@ -28,14 +25,14 @@ cd docs && yarn install && cd ..
 ### Running All Services
 
 ```bash
-# Start frontend, backend, and docs concurrently
+# Start frontend and backend concurrently
 yarn dev
 ```
 
 This starts:
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3001
-- Docs: http://localhost:3002
+
+- Frontend: http://localhost:5173 (Vite dev server with hot reload)
+- Backend: http://localhost:3001 (Express API with hot reload)
 
 ### Running Individual Services
 
@@ -45,22 +42,38 @@ yarn dev:frontend
 
 # Backend only
 yarn dev:backend
-
-# Docs only
-yarn dev:docs
 ```
 
 ### Building
 
 ```bash
-# Build all services
+# Build frontend for production
 yarn build
+```
 
-# Build frontend only
-yarn build:frontend
+### Testing Production Build
 
-# Build docs only
-yarn build:docs
+```bash
+# Test production build without PM2 (useful for debugging)
+yarn production:simple
+```
+
+This starts:
+
+- Frontend: http://localhost:5173 (production build preview)
+- Backend: http://localhost:3001 (Express with production environment)
+
+### Production Deployment
+
+```bash
+# Full production deployment with PM2
+yarn production:pm2
+
+# This will:
+# - Install dependencies
+# - Build frontend for production
+# - Start/restart services with PM2
+# - Save PM2 process list
 ```
 
 ### Code Quality
@@ -91,17 +104,12 @@ icjia-accessibility-status/
 │   ├── middleware/              # Express middleware
 │   ├── utils/                   # Utility functions
 │   └── index.ts                 # Server entry point
-├── docs/                         # Docusaurus documentation
-│   ├── docs/                    # Documentation markdown files
-│   ├── src/                     # Custom React components
-│   ├── docusaurus.config.ts     # Docusaurus configuration
-│   └── sidebars.ts              # Documentation sidebar
 ├── supabase/                     # Database migrations
 │   └── migrations/              # SQL migration files
 ├── scripts/                      # Utility scripts
 │   ├── reset-users.js           # Reset admin users
 │   └── reset-app.js             # Complete database wipe
-├── nginx/                        # Nginx configuration
+├── docs/                         # Documentation (Markdown files)
 ├── package.json                  # Root package.json
 ├── vite.config.ts               # Vite configuration
 ├── tsconfig.json                # TypeScript configuration
@@ -132,6 +140,7 @@ FRONTEND_URL=http://localhost:5173
 See [Setup Guide](./setup-guide) for complete database setup instructions.
 
 Quick summary:
+
 1. Create Supabase project
 2. Run migration files in SQL Editor
 3. Verify tables were created
@@ -225,4 +234,3 @@ yarn lint --fix
 - Read [Quick Start](./quick-start) to get running
 - Check [API Documentation](./api/overview) for API reference
 - See [Deployment Guide](./deployment/overview) for production setup
-

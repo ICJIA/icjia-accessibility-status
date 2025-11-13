@@ -5,13 +5,15 @@
  * @module components/ScanResults
  */
 
+import { Link } from "react-router-dom";
 import { Scan } from "../types";
 import { ScoreBadge } from "./ScoreBadge";
-import { AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, FileText } from "lucide-react";
 
 interface ScanResultsProps {
   scans: Scan[];
   loading?: boolean;
+  siteId?: string;
 }
 
 /**
@@ -29,12 +31,18 @@ interface ScanResultsProps {
  * @param {boolean} [props.loading=false] - Loading state
  * @returns {React.ReactElement} The scan results component
  */
-export function ScanResults({ scans, loading = false }: ScanResultsProps) {
+export function ScanResults({
+  scans,
+  loading = false,
+  siteId,
+}: ScanResultsProps) {
   if (loading) {
     return (
       <div className="text-center py-8">
         <Clock className="h-8 w-8 text-gray-400 mx-auto mb-2 animate-spin" />
-        <p className="text-gray-600 dark:text-gray-400">Loading scan results...</p>
+        <p className="text-gray-600 dark:text-gray-400">
+          Loading scan results...
+        </p>
       </div>
     );
   }
@@ -42,7 +50,9 @@ export function ScanResults({ scans, loading = false }: ScanResultsProps) {
   if (!scans || scans.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-600 dark:text-gray-400">No scans available yet.</p>
+        <p className="text-gray-600 dark:text-gray-400">
+          No scans available yet.
+        </p>
       </div>
     );
   }
@@ -65,13 +75,21 @@ export function ScanResults({ scans, loading = false }: ScanResultsProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
-        return <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />;
+        return (
+          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+        );
       case "failed":
-        return <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />;
+        return (
+          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+        );
       case "running":
-        return <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin" />;
+        return (
+          <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin" />
+        );
       default:
-        return <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />;
+        return (
+          <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+        );
     }
   };
 
@@ -105,6 +123,19 @@ export function ScanResults({ scans, loading = false }: ScanResultsProps) {
           {/* Scores and Reports */}
           {scan.status === "completed" && (
             <div className="space-y-4">
+              {/* Report Link */}
+              {siteId && (
+                <div className="flex justify-end">
+                  <Link
+                    to={`/sites/${siteId}/scans/${scan.id}/report`}
+                    className="inline-flex items-center space-x-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>View Violation Report</span>
+                  </Link>
+                </div>
+              )}
+
               {/* Lighthouse Result */}
               {scan.lighthouse_score !== null && (
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
@@ -172,4 +203,3 @@ export function ScanResults({ scans, loading = false }: ScanResultsProps) {
     </div>
   );
 }
-

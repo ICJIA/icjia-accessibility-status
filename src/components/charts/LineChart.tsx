@@ -66,6 +66,22 @@ export function LineChart({ data }: LineChartProps) {
     text: isDark ? "#9ca3af" : "#6b7280",
   };
 
+  // Show message if insufficient data
+  if (!data || data.length < 2) {
+    return (
+      <div className="w-full h-80 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">
+            Insufficient data to display trends
+          </p>
+          <p className="text-gray-400 dark:text-gray-500 text-xs">
+            Run at least 2 scans to see historical trends
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <RechartsLineChart data={data}>

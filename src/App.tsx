@@ -14,6 +14,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { SetupCheck } from "./components/SetupCheck";
 import { Dashboard } from "./pages/Dashboard";
 import { SiteDetail } from "./pages/SiteDetail";
+import { AddSite } from "./pages/AddSite";
+import { ScanReport } from "./pages/ScanReport";
 import { Login } from "./pages/Login";
 import { ChangePassword } from "./pages/ChangePassword";
 import { InitialSetup } from "./pages/InitialSetup";
@@ -56,6 +58,18 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/sites/:id" element={<SiteDetail />} />
+                <Route
+                  path="/sites/:siteId/scans/:scanId/report"
+                  element={<ScanReport />}
+                />
+                <Route
+                  path="/admin/sites/new"
+                  element={
+                    <ProtectedRoute>
+                      <AddSite />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="/health" element={<Health />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/setup" element={<InitialSetup />} />

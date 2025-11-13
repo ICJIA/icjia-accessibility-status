@@ -6,6 +6,8 @@
  * @module lib/api
  */
 
+// Use relative path /api to go through Nginx proxy (same-origin)
+// This ensures cookies are sent with requests
 const API_BASE = "/api";
 
 /**
@@ -125,7 +127,6 @@ export const api = {
     list: () => fetchAPI("/sites"),
     get: (id: string) => fetchAPI(`/sites/${id}`),
     getHistory: (id: string) => fetchAPI(`/sites/${id}/history`),
-    getPayloads: (id: string) => fetchAPI(`/sites/${id}/payloads`),
     getScans: (id: string) => fetchAPI(`/sites/${id}/scans`),
     create: (data: any) =>
       fetchAPI("/sites", {
@@ -216,6 +217,17 @@ export const api = {
       if (offset) params.append("offset", offset.toString());
       return fetchAPI(`/activity-log?${params.toString()}`);
     },
+  },
+
+  scans: {
+    trigger: (
+      site_id: string,
+      scan_type: "lighthouse" | "axe" | "both" = "both"
+    ) =>
+      fetchAPI("/scans", {
+        method: "POST",
+        body: JSON.stringify({ site_id, scan_type }),
+      }),
   },
 
   health: {

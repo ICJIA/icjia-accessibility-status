@@ -24,8 +24,8 @@ cp .env.sample .env
 
 # 3. Run database migrations
 # Go to Supabase Dashboard → SQL Editor → New query
-# Copy and run: supabase/migrations/step_1_create_initial_schema.sql
-# Then run: supabase/migrations/step_2_api_keys_and_rls_fixes.sql
+# Copy and run: supabase/migrations/01_create_initial_schema.sql
+# Then run: supabase/migrations/02_add_api_keys_and_payloads.sql
 
 # 4. Start development server
 yarn dev
@@ -39,13 +39,18 @@ yarn dev
 ### Available Commands
 
 ```bash
-yarn dev              # Start frontend and backend (development mode)
-yarn dev:frontend     # Frontend only
-yarn dev:backend      # Backend only
-yarn staging          # Start frontend and backend without PM2 (for testing)
+# Development
+yarn dev              # Start frontend and backend concurrently (development mode)
+yarn dev:frontend     # Frontend only (Vite dev server on port 5173)
+yarn dev:backend      # Backend only (Express on port 3001)
+
+# Production
 yarn build            # Build frontend for production
+yarn production:simple # Test production build without PM2 (frontend + backend)
+yarn production:pm2   # Full production deployment (build + PM2 start)
 yarn start            # Start services with PM2 (production mode)
-yarn forge            # Full production deployment (build + PM2 start)
+
+# Utilities
 yarn seed             # Populate database with sample data
 yarn lint             # Run ESLint
 yarn typecheck        # Run TypeScript type checking

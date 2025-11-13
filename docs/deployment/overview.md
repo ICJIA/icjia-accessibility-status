@@ -4,7 +4,7 @@ Guide to deploying the ICJIA Accessibility Portal to production.
 
 ## Architecture
 
-The application consists of three services running on different ports:
+The application consists of two services running on different ports:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -13,7 +13,6 @@ The application consists of three services running on different ports:
 │                                                         │
 │  / ──────────────────────→ Frontend (Port 5173)        │
 │  /api/ ────────────────────→ Backend (Port 3001)       │
-│  /docs/ ───────────────────→ Docs (Port 3002)         │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -24,7 +23,6 @@ The application consists of three services running on different ports:
 | ------------ | ---- | --------------------- | ----------------- |
 | **Frontend** | 5173 | React web application | Vite + React      |
 | **Backend**  | 3001 | Express API server    | Node.js + Express |
-| **Docs**     | 3002 | Documentation site    | Docusaurus        |
 
 ## Deployment Options
 
@@ -53,17 +51,7 @@ Deploy on Laravel Forge with:
 
 **See:** [Laravel Forge Deployment Guide](./laravel-forge)
 
-### Option 3: Docker
-
-Deploy using Docker containers:
-
-- Containerized services
-- Easy scaling
-- Consistent environments
-
-**Coming soon**
-
-### Option 4: Cloud Platforms
+### Option 3: Cloud Platforms
 
 Deploy to cloud providers:
 
@@ -123,14 +111,12 @@ NODE_ENV=production
 ```bash
 # Install dependencies
 yarn install
-cd docs && yarn install && cd ..
 
-# Build all services
+# Build frontend for production
 yarn build
 
 # This creates:
 # - dist/ (frontend build)
-# - docs/build/ (documentation build)
 ```
 
 ## Running in Production
@@ -138,7 +124,10 @@ yarn build
 ### With PM2
 
 ```bash
-# Start all services
+# Full production deployment (recommended)
+yarn production:pm2
+
+# Or manually manage with PM2:
 pm2 start ecosystem.config.js --env production
 
 # View status
@@ -271,7 +260,6 @@ sudo journalctl -xe
 # Verify ports are available
 sudo lsof -i :5173
 sudo lsof -i :3001
-sudo lsof -i :3002
 ```
 
 ### Nginx Not Proxying
@@ -284,11 +272,8 @@ sudo nginx -t
 sudo tail -f /var/log/nginx/error.log
 
 # Verify upstream services running
-# Note: localhost and 127.0.0.1 are equivalent for local testing
-# In Nginx configs, we use 127.0.0.1 for upstream proxying (more reliable)
 curl http://localhost:5173
 curl http://localhost:3001/api
-curl http://localhost:3002
 ```
 
 ### Database Connection Issues

@@ -9,11 +9,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Download, TrendingUp, TrendingDown, Minus, Plus } from "lucide-react";
-import { Site } from "../types";
+import { Site, ScoreHistory } from "../types";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { ScoreBadge } from "../components/ScoreBadge";
 import { ComplianceCountdown } from "../components/ComplianceCountdown";
+import { MiniTrendChart } from "../components/charts/MiniTrendChart";
 
 /**
  * Dashboard Page Component
@@ -35,8 +36,14 @@ import { ComplianceCountdown } from "../components/ComplianceCountdown";
  */
 export function Dashboard() {
   const [sites, setSites] = useState<Site[]>([]);
+  const [siteHistories, setSiteHistories] = useState<
+    Record<string, ScoreHistory[]>
+  >({});
   const [loading, setLoading] = useState(true);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [timeRange, setTimeRange] = useState<
+    "1h" | "6h" | "24h" | "7d" | "14d" | "30d"
+  >("7d");
   const { user } = useAuth();
 
   useEffect(() => {
@@ -47,11 +54,70 @@ export function Dashboard() {
     try {
       const response = await api.sites.list();
       setSites(response.sites);
+
+      // Load history for each site
+      const histories: Record<string, ScoreHistory[]> = {};
+      for (const site of response.sites) {
+        try {
+          const historyResponse = await api.sites.getHistory(site.id);
+          histories[site.id] = historyResponse.history || [];
+        } catch (error) {
+          console.error(`Failed to load history for site ${site.id}:`, error);
+          histories[site.id] = [];
+        }
+      }
+      setSiteHistories(histories);
     } catch (error) {
       console.error("Failed to load sites:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getTimeRangeFilter = (range: string): Date => {
+    const now = new Date();
+    switch (range) {
+      case "1h":
+        return new Date(now.getTime() - 1 * 60 * 60 * 1000);
+      case "6h":
+        return new Date(now.getTime() - 6 * 60 * 60 * 1000);
+      case "24h":
+        return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      case "7d":
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      case "14d":
+        return new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+      case "30d":
+        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      default:
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    }
+  };
+
+  const getTimeRangeLabel = (range: string): string => {
+    switch (range) {
+      case "1h":
+        return "Last 1 Hour";
+      case "6h":
+        return "Last 6 Hours";
+      case "24h":
+        return "Last 24 Hours";
+      case "7d":
+        return "Last 7 Days";
+      case "14d":
+        return "Last 14 Days";
+      case "30d":
+        return "Last 30 Days";
+      default:
+        return "Last 7 Days";
+    }
+  };
+
+  const filterHistoryByTimeRange = (
+    history: ScoreHistory[]
+  ): ScoreHistory[] => {
+    const cutoffDate = getTimeRangeFilter(timeRange);
+    return history.filter((h) => new Date(h.recorded_at) >= cutoffDate);
   };
 
   const avgAxe =
@@ -138,10 +204,27 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          All Sites
-        </h2>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+            All Sites
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {(["1h", "6h", "24h", "7d", "14d", "30d"] as const).map((range) => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  timeRange === range
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                }`}
+              >
+                {getTimeRangeLabel(range)}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="flex space-x-3">
           {user && (
             <Link
@@ -212,6 +295,31 @@ export function Dashboard() {
                 </span>
                 <ScoreBadge score={site.lighthouse_score} size="sm" />
               </div>
+
+              {/* Accessibility Trend Chart */}
+              {siteHistories[site.id] && siteHistories[site.id].length > 0 && (
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Accessibility Over Time ({getTimeRangeLabel(timeRange)})
+                  </p>
+                  <MiniTrendChart
+                    data={filterHistoryByTimeRange(siteHistories[site.id]).map(
+                      (h) => ({
+                        date: new Date(h.recorded_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                          }
+                        ),
+                        axe: h.axe_score,
+                        lighthouse: h.lighthouse_score,
+                      })
+                    )}
+                  />
+                </div>
+              )}
+
               <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-xs text-gray-500 dark:text-gray-500">
                   Last audit date:{" "}
@@ -231,10 +339,28 @@ export function Dashboard() {
       </div>
 
       {sites.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-600 dark:text-gray-400">
-            No sites found. Add your first site to get started.
-          </p>
+        <div className="text-center py-16">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 border border-gray-200 dark:border-gray-700 max-w-md mx-auto">
+            <div className="mb-4">
+              <Plus className="h-12 w-12 text-blue-600 mx-auto" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              No Sites Yet
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Get started by adding your first website for accessibility
+              scanning.
+            </p>
+            {user && (
+              <Link
+                to="/admin/sites/new"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+              >
+                <Plus className="h-5 w-5" />
+                <span>Add Your First Site</span>
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </div>

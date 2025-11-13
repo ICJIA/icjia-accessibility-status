@@ -5,7 +5,7 @@
  * @module pages/SiteDetail
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -14,6 +14,7 @@ import {
   Edit,
   Trash2,
   TrendingUp,
+  Play,
 } from "lucide-react";
 import { Site, ScoreHistory, Scan } from "../types";
 import { api } from "../lib/api";
@@ -23,33 +24,7 @@ import { LineChart } from "../components/charts/LineChart";
 import { GaugeChart } from "../components/charts/GaugeChart";
 import { ScoreTrendChart } from "../components/charts/ScoreTrendChart";
 import { ScanResults } from "../components/ScanResults";
-
-/**
- * Represents an API payload
- * @typedef {Object} ApiPayload
- * @property {string} id - Payload UUID
- * @property {string} payload_id - Payload ID
- * @property {any} payload - Payload data
- * @property {number} payload_size - Size in bytes
- * @property {string|null} description - Optional description
- * @property {string} created_at - Creation timestamp
- * @property {string|null} created_by_user - Creator username
- * @property {string|null} api_key_id - Associated API key ID
- * @property {Object|null} admin_users - Associated admin user
- * @property {Object|null} api_keys - Associated API key
- */
-interface ApiPayload {
-  id: string;
-  payload_id: string;
-  payload: any;
-  payload_size: number;
-  description: string | null;
-  created_at: string;
-  created_by_user: string | null;
-  api_key_id: string | null;
-  admin_users: { username: string; email: string } | null;
-  api_keys: { key_name: string; key_prefix: string; key_suffix: string } | null;
-}
+import { ScanStatusIndicator } from "../components/ScanStatusIndicator";
 
 /**
  * SiteDetail Page Component
@@ -73,13 +48,19 @@ export function SiteDetail() {
   const { id } = useParams<{ id: string }>();
   const [site, setSite] = useState<Site | null>(null);
   const [history, setHistory] = useState<ScoreHistory[]>([]);
-  const [payloads, setPayloads] = useState<ApiPayload[]>([]);
   const [scans, setScans] = useState<Scan[]>([]);
   const [loading, setLoading] = useState(true);
   const [scansLoading, setScansLoading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showPayloads, setShowPayloads] = useState(false);
+  const [isRunningScans, setIsRunningScans] = useState(false);
+  const [scanType, setScanType] = useState<"lighthouse" | "axe" | "both">(
+    "both"
+  );
+  const [timeRange, setTimeRange] = useState<
+    "1h" | "6h" | "24h" | "7d" | "14d" | "30d"
+  >("7d");
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -87,7 +68,6 @@ export function SiteDetail() {
     if (id) {
       loadSite();
       loadHistory();
-      loadPayloads();
       loadScans();
     }
   }, [id]);
@@ -112,20 +92,23 @@ export function SiteDetail() {
     }
   };
 
-  const loadPayloads = async () => {
-    try {
-      const response = await api.sites.getPayloads(id!);
-      setPayloads(response.payloads);
-    } catch (error) {
-      console.error("Failed to load payloads:", error);
-    }
-  };
-
   const loadScans = async () => {
     try {
       setScansLoading(true);
       const response = await api.sites.getScans(id!);
       setScans(response.scans);
+
+      // Check if all scans are complete - if so, stop polling
+      if (response.scans && response.scans.length > 0) {
+        const allComplete = response.scans.every(
+          (scan) => scan.status === "completed" || scan.status === "failed"
+        );
+        if (allComplete && pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+          pollIntervalRef.current = null;
+          setIsRunningScans(false);
+        }
+      }
     } catch (error) {
       console.error("Failed to load scans:", error);
     } finally {
@@ -133,16 +116,48 @@ export function SiteDetail() {
     }
   };
 
+  const handleRunScan = async () => {
+    try {
+      setIsRunningScans(true);
+      const response = await api.scans.trigger(id!, scanType);
+      console.log("Scan triggered:", response.scan);
+
+      // Add new scan to the list
+      setScans([response.scan, ...scans]);
+
+      // Start polling for updates
+      startPolling();
+    } catch (error) {
+      console.error("Failed to trigger scan:", error);
+      setIsRunningScans(false);
+    }
+  };
+
+  const startPolling = () => {
+    // Clear any existing interval
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+    }
+
+    // Poll every 2 seconds
+    pollIntervalRef.current = setInterval(() => {
+      loadScans();
+    }, 2000);
+  };
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, []);
+
   const handleExport = (format: string) => {
     const url = api.export.site(id!, format);
     window.open(url, "_blank");
     setShowExportMenu(false);
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   };
 
   const handleDelete = async () => {
@@ -152,6 +167,50 @@ export function SiteDetail() {
     } catch (error) {
       console.error("Failed to delete site:", error);
     }
+  };
+
+  const getTimeRangeFilter = (range: string): Date => {
+    const now = new Date();
+    switch (range) {
+      case "1h":
+        return new Date(now.getTime() - 1 * 60 * 60 * 1000);
+      case "6h":
+        return new Date(now.getTime() - 6 * 60 * 60 * 1000);
+      case "24h":
+        return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      case "7d":
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      case "14d":
+        return new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+      case "30d":
+        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      default:
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    }
+  };
+
+  const getTimeRangeLabel = (range: string): string => {
+    switch (range) {
+      case "1h":
+        return "Last 1 Hour";
+      case "6h":
+        return "Last 6 Hours";
+      case "24h":
+        return "Last 24 Hours";
+      case "7d":
+        return "Last 7 Days";
+      case "14d":
+        return "Last 14 Days";
+      case "30d":
+        return "Last 30 Days";
+      default:
+        return "Last 7 Days";
+    }
+  };
+
+  const filterHistoryByTimeRange = (hist: ScoreHistory[]): ScoreHistory[] => {
+    const cutoffDate = getTimeRangeFilter(timeRange);
+    return hist.filter((h) => new Date(h.recorded_at) >= cutoffDate);
   };
 
   if (loading) {
@@ -178,7 +237,8 @@ export function SiteDetail() {
     (april2026.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  const chartData = history.map((h) => ({
+  const filteredHistory = filterHistoryByTimeRange(history);
+  const chartData = filteredHistory.map((h) => ({
     date: new Date(h.recorded_at).toLocaleDateString("en-US", {
       month: "short",
       year: "numeric",
@@ -194,6 +254,16 @@ export function SiteDetail() {
   const lighthouseImprovement = firstHistory
     ? site.lighthouse_score - firstHistory.lighthouse_score
     : 0;
+
+  // Get the last completed scan for each type
+  const getLastScanTime = (scanType: "lighthouse" | "axe") => {
+    const completedScans = scans.filter(
+      (scan) =>
+        scan.status === "completed" && scan[`${scanType}_score`] !== null
+    );
+    if (completedScans.length === 0) return null;
+    return completedScans[0].completed_at || completedScans[0].created_at;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -232,6 +302,17 @@ export function SiteDetail() {
               >
                 <ExternalLink className="h-4 w-4" />
                 <span>Documentation</span>
+              </a>
+            )}
+            {site.sitemap_url && (
+              <a
+                href={site.sitemap_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-4 inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Sitemap</span>
               </a>
             )}
           </div>
@@ -291,21 +372,64 @@ export function SiteDetail() {
             <GaugeChart
               score={site.axe_score}
               label="Axe Accessibility Score"
+              subtitle={
+                getLastScanTime("axe")
+                  ? `Last scan: ${new Date(
+                      getLastScanTime("axe")!
+                    ).toLocaleDateString()} at ${new Date(
+                      getLastScanTime("axe")!
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`
+                  : "No scans yet"
+              }
             />
           </div>
           <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
             <GaugeChart
               score={site.lighthouse_score}
               label="Lighthouse Accessibility Score"
+              subtitle={
+                getLastScanTime("lighthouse")
+                  ? `Last scan: ${new Date(
+                      getLastScanTime("lighthouse")!
+                    ).toLocaleDateString()} at ${new Date(
+                      getLastScanTime("lighthouse")!
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`
+                  : "No scans yet"
+              }
             />
           </div>
         </div>
 
         {history.length > 0 && (
           <>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Score Progression Over Time
-            </h3>
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Score Progression Over Time
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {(["1h", "6h", "24h", "7d", "14d", "30d"] as const).map(
+                  (range) => (
+                    <button
+                      key={range}
+                      onClick={() => setTimeRange(range)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        timeRange === range
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                      }`}
+                    >
+                      {getTimeRangeLabel(range)}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 mb-6">
               <LineChart data={chartData} />
             </div>
@@ -317,7 +441,7 @@ export function SiteDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
                 <ScoreTrendChart
-                  data={history.map((h) => ({
+                  data={filteredHistory.map((h) => ({
                     date: new Date(h.recorded_at).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -330,7 +454,7 @@ export function SiteDetail() {
               </div>
               <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
                 <ScoreTrendChart
-                  data={history.map((h) => ({
+                  data={filteredHistory.map((h) => ({
                     date: new Date(h.recorded_at).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -385,16 +509,6 @@ export function SiteDetail() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Current Status
             </h3>
-            {site.updated_at && (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Last JSON upload:{" "}
-                {new Date(site.updated_at).toLocaleDateString()} at{" "}
-                {new Date(site.updated_at).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -403,8 +517,15 @@ export function SiteDetail() {
               </p>
               <ScoreBadge score={site.axe_score} size="lg" />
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                Score date:{" "}
-                {new Date(site.axe_last_updated).toLocaleDateString()}
+                Last scan:{" "}
+                {getLastScanTime("axe")
+                  ? new Date(getLastScanTime("axe")!).toLocaleDateString() +
+                    " at " +
+                    new Date(getLastScanTime("axe")!).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "Never"}
               </p>
             </div>
             <div>
@@ -413,8 +534,20 @@ export function SiteDetail() {
               </p>
               <ScoreBadge score={site.lighthouse_score} size="lg" />
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                Score date:{" "}
-                {new Date(site.lighthouse_last_updated).toLocaleDateString()}
+                Last scan:{" "}
+                {getLastScanTime("lighthouse")
+                  ? new Date(
+                      getLastScanTime("lighthouse")!
+                    ).toLocaleDateString() +
+                    " at " +
+                    new Date(getLastScanTime("lighthouse")!).toLocaleTimeString(
+                      [],
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )
+                  : "Never"}
               </p>
             </div>
           </div>
@@ -428,88 +561,40 @@ export function SiteDetail() {
           )}
         </div>
 
+        {/* Real-time Scan Status Indicator */}
+        <ScanStatusIndicator scans={scans} isRunning={isRunningScans} />
+
         {/* Scan Results Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Accessibility Scans ({scans.length})
-          </h3>
-          <ScanResults scans={scans} loading={scansLoading} />
-        </div>
-
-        {/* API Upload History Section */}
-        {payloads.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                API Upload History ({payloads.length})
-              </h3>
-              <button
-                onClick={() => setShowPayloads(!showPayloads)}
-                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                {showPayloads ? "Hide" : "Show"} History
-              </button>
-            </div>
-
-            {showPayloads && (
-              <div className="space-y-3">
-                {payloads.map((payload) => (
-                  <div
-                    key={payload.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <Link
-                            to={`/admin/payloads/${payload.id}`}
-                            className="font-mono text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                          >
-                            {payload.payload_id}
-                          </Link>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            ({formatFileSize(payload.payload_size)})
-                          </span>
-                        </div>
-                        {payload.description && (
-                          <p className="text-sm text-gray-900 dark:text-white mt-2 font-medium">
-                            {payload.description}
-                          </p>
-                        )}
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          {new Date(payload.created_at).toLocaleString()}
-                        </p>
-                        {payload.api_keys && (
-                          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                            API Key: {payload.api_keys.key_name} (
-                            {payload.api_keys.key_prefix}...
-                            {payload.api_keys.key_suffix})
-                          </p>
-                        )}
-                        {payload.admin_users && (
-                          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                            By: {payload.admin_users.username}
-                          </p>
-                        )}
-                        <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                          <strong>Scores:</strong> Axe:{" "}
-                          {payload.payload.axe_score}, Lighthouse:{" "}
-                          {payload.payload.lighthouse_score}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Accessibility Scans ({scans.length})
+            </h3>
+            {user && (
+              <div className="flex items-center space-x-3">
+                <select
+                  value={scanType}
+                  onChange={(e) => setScanType(e.target.value as any)}
+                  disabled={isRunningScans}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm disabled:opacity-50"
+                >
+                  <option value="both">Both (Lighthouse + Axe)</option>
+                  <option value="lighthouse">Lighthouse Only</option>
+                  <option value="axe">Axe Only</option>
+                </select>
+                <button
+                  onClick={handleRunScan}
+                  disabled={isRunningScans}
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed"
+                >
+                  <Play className="h-4 w-4" />
+                  <span>{isRunningScans ? "Running..." : "Run Scan"}</span>
+                </button>
               </div>
             )}
-
-            {!showPayloads && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Click "Show History" to view all API uploads for this site
-              </p>
-            )}
           </div>
-        )}
+          <ScanResults scans={scans} loading={scansLoading} siteId={id} />
+        </div>
       </div>
 
       {showDeleteConfirm && (

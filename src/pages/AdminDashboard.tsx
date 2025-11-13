@@ -17,6 +17,7 @@ import {
   Database,
   BarChart3,
   Activity,
+  Globe,
 } from "lucide-react";
 import { ActivityLog } from "../components/ActivityLog";
 import { PayloadComparison } from "../components/PayloadComparison";
@@ -147,6 +148,24 @@ export function AdminDashboard() {
 
       {/* Action Cards Section - Top */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* Add Site Card - First */}
+        <a
+          href="/admin/sites/new"
+          className="group block p-6 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 rounded-lg shadow hover:shadow-xl transition-all border border-red-200 dark:border-red-700 hover:scale-105"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-red-600 rounded-lg group-hover:bg-red-700 transition-colors">
+              <Globe className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Add Site
+          </h3>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            Add a new website for accessibility scanning
+          </p>
+        </a>
+
         {/* User Management Card */}
         <a
           href="/admin/users"
@@ -198,24 +217,6 @@ export function AdminDashboard() {
           </h3>
           <p className="text-sm text-gray-700 dark:text-gray-300">
             View and manage all API payload uploads
-          </p>
-        </a>
-
-        {/* Sites Dashboard Card */}
-        <a
-          href="/"
-          className="group block p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-lg shadow hover:shadow-xl transition-all border border-orange-200 dark:border-orange-700 hover:scale-105"
-        >
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 bg-orange-600 rounded-lg group-hover:bg-orange-700 transition-colors">
-              <BarChart3 className="h-6 w-6 text-white" />
-            </div>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Sites Dashboard
-          </h3>
-          <p className="text-sm text-gray-700 dark:text-gray-300">
-            View and manage accessibility scores
           </p>
         </a>
       </div>

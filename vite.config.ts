@@ -8,15 +8,30 @@ export default defineConfig({
     exclude: ["lucide-react"],
   },
   server: {
+    host: "0.0.0.0", // Listen on all interfaces
     open: true, // Automatically open browser on server start
     proxy: {
       "/api": {
-        // Use VITE_API_URL from .env, fallback to localhost:3001
-        // Extract the base URL (without /api path) for the proxy target
-        target:
-          process.env.VITE_API_URL?.replace(/\/api\/?$/, "") ||
-          "http://localhost:3001",
+        target: "http://localhost:3001",
         changeOrigin: true,
+        ws: true,
+        // Ensure cookies are forwarded in both directions
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq, req) => {
+            // Forward cookies from the original request to backend
+            if (req.headers.cookie) {
+              proxyReq.setHeader("Cookie", req.headers.cookie);
+            }
+          });
+
+          // Forward Set-Cookie headers from backend response to client
+          proxy.on("proxyRes", (proxyRes, req, res) => {
+            const setCookieHeaders = proxyRes.headers["set-cookie"];
+            if (setCookieHeaders) {
+              res.setHeader("Set-Cookie", setCookieHeaders);
+            }
+          });
+        },
       },
     },
   },

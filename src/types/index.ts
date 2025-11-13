@@ -12,6 +12,7 @@
  * @property {string} title - Site title/name
  * @property {string} description - Site description
  * @property {string} url - Website URL
+ * @property {string|null} sitemap_url - Optional sitemap URL
  * @property {string|null} documentation_url - Optional documentation URL
  * @property {number} axe_score - Current Axe accessibility score (0-100)
  * @property {number} lighthouse_score - Current Lighthouse score (0-100)
@@ -25,6 +26,7 @@ export interface Site {
   title: string;
   description: string;
   url: string;
+  sitemap_url: string | null;
   documentation_url: string | null;
   axe_score: number;
   lighthouse_score: number;
@@ -150,4 +152,39 @@ export interface Scan {
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Detailed accessibility violation from a scan
+ * @typedef {Object} ScanViolation
+ * @property {string} id - Violation identifier
+ * @property {string} scan_id - Associated scan ID
+ * @property {'axe'|'lighthouse'} violation_type - Type of violation
+ * @property {string} rule_id - Rule identifier
+ * @property {string} rule_name - Human-readable rule name
+ * @property {string} description - Violation description
+ * @property {'critical'|'serious'|'moderate'|'minor'} impact_level - Severity level
+ * @property {'A'|'AA'|'AAA'} wcag_level - WCAG compliance level
+ * @property {string} page_url - URL where violation was found
+ * @property {string|null} element_selector - CSS selector of affected element
+ * @property {number} element_count - Number of affected elements
+ * @property {string|null} help_url - Link to documentation
+ * @property {string|null} suggested_fix - Suggested remediation
+ * @property {string} created_at - Creation timestamp
+ */
+export interface ScanViolation {
+  id: string;
+  scan_id: string;
+  violation_type: "axe" | "lighthouse";
+  rule_id: string;
+  rule_name: string;
+  description: string;
+  impact_level: "critical" | "serious" | "moderate" | "minor";
+  wcag_level: "A" | "AA" | "AAA";
+  page_url: string;
+  element_selector: string | null;
+  element_count: number;
+  help_url: string | null;
+  suggested_fix: string | null;
+  created_at: string;
 }

@@ -126,12 +126,17 @@ router.post("/login", loginLimiter, sessionLimiter, async (req, res) => {
     // Log successful login
     await logSuccessfulLogin(req, user.id, username);
 
+    console.log(
+      "[Login] Setting session cookie with token:",
+      sessionToken.substring(0, 10) + "..."
+    );
     res.cookie("session_token", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 15 * 24 * 60 * 60 * 1000,
     });
+    console.log("[Login] Cookie set, response headers:", res.getHeaders());
 
     return res.json({
       user: {

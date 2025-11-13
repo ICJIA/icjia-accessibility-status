@@ -18,6 +18,7 @@ import documentationRoutes from "./routes/documentation.js";
 import apiKeyRoutes from "./routes/apiKeys.js";
 import payloadRoutes from "./routes/payloads.js";
 import activityLogRoutes from "./routes/activityLog.js";
+import scanRoutes from "./routes/scans.js";
 import { supabase } from "./utils/supabase.js";
 import { generalLimiter } from "./middleware/rateLimiter.js";
 import { startKeyDeactivationJob } from "./utils/keyRotationManager.js";
@@ -32,12 +33,34 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
-app.use(
-  cors({
-    origin: FRONTEND_URL,
-    credentials: true,
-  })
-);
+// Manually set CORS headers
+app.use((req, res, next) => {
+  const origin = req.get("origin");
+
+  // Allow requests from FRONTEND_URL or from localhost (for Nginx proxy)
+  const allowedOrigins = [
+    FRONTEND_URL,
+    "http://localhost",
+    "http://localhost:80",
+  ];
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  } else if (!origin) {
+    // Allow requests without origin (like from curl or same-origin requests)
+    res.header("Access-Control-Allow-Origin", FRONTEND_URL);
+  }
+
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -53,6 +76,7 @@ app.use("/api/documentation", documentationRoutes);
 app.use("/api/api-keys", apiKeyRoutes);
 app.use("/api/payloads", payloadRoutes);
 app.use("/api/activity-log", activityLogRoutes);
+app.use("/api/scans", scanRoutes);
 
 /**
  * GET /api/health

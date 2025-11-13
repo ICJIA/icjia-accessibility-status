@@ -127,15 +127,15 @@ If you see this, setup is complete! ✅
 ## Step 7: Start the Application
 
 ```bash
-# Start both frontend and backend
+# Start both frontend and backend concurrently
 yarn dev
 ```
 
 This will:
 
-- Start the backend API on `http://localhost:3001`
-- Start the frontend on `http://localhost:5173`
-- Automatically open your browser
+- Start the backend API on `http://localhost:3001` (Express with hot reload)
+- Start the frontend on `http://localhost:5173` (Vite dev server with hot reload)
+- Automatically open your browser to the frontend
 
 ---
 

@@ -13,7 +13,7 @@ async function testWorkflow() {
 
   const { data: keys, error } = await supabase
     .from("api_keys")
-    .select("id, key_name, key_prefix, scopes")
+    .select("id, key_name, api_key_prefix, scopes")
     .order("created_at", { ascending: false })
     .limit(1);
 
@@ -25,7 +25,7 @@ async function testWorkflow() {
   if (keys && keys.length > 0) {
     console.log("✅ Found existing API key:");
     console.log(`   Name: ${keys[0].key_name}`);
-    console.log(`   Prefix: ${keys[0].key_prefix}...`);
+    console.log(`   Prefix: ${keys[0].api_key_prefix}...`);
     console.log(`   Scopes: ${keys[0].scopes?.join(", ") || "none"}`);
   } else {
     console.log("⚠️  No API keys found in database");
