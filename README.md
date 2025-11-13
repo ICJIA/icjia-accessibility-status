@@ -115,7 +115,7 @@ All documentation is available as Markdown files in the `/docs` directory, organ
 
 - **[Deployment Overview](docs/deployment/overview.md)** - Deployment options and strategies
 - **[Laravel Forge Setup](docs/deployment/laravel-forge.md)** - Complete Forge deployment guide
-- **[PM2 Configuration](docs/deployment/pm2-ecosystem-config.md)** - PM2 setup and configuration
+- **[PM2 Configuration](docs/deployment/pm2.md)** - PM2 setup and configuration
 - **[Nginx Configuration](docs/deployment/nginx.md)** - Nginx reverse proxy setup
 - **[Production Deployment](docs/deployment/production.md)** - Production deployment checklist
 - **[Health Check Monitoring](docs/deployment/health-check-monitoring.md)** - Monitoring setup
