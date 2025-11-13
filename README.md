@@ -68,6 +68,21 @@ Detailed accessibility report for individual websites with violation breakdown a
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+## 📥 Export Data
+
+All users can export accessibility data in multiple formats directly from the dashboard - **no authentication required**:
+
+- **JSON** - Complete structured data for programmatic access
+- **CSV** - Spreadsheet-compatible format for analysis in Excel/Sheets
+- **Markdown** - Formatted report for documentation and sharing
+
+Click the **Export** button on the dashboard to download your preferred format. Perfect for:
+
+- Compliance reporting
+- Stakeholder presentations
+- Data analysis and trending
+- Integration with other tools
+
 ## ⚡ Quick Start
 
 ### Local Development (5 Minutes)
