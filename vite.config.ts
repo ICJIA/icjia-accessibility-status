@@ -9,7 +9,7 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0", // Listen on all interfaces
-    open: true, // Automatically open browser on server start
+    open: false, // Don't automatically open browser
     proxy: {
       "/api": {
         target: "http://localhost:3001",

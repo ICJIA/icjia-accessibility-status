@@ -6,6 +6,10 @@ A comprehensive web accessibility tracking system for the Illinois Criminal Just
 
 > 📚 **[Documentation](#-documentation)** | **[GitHub Repository](https://github.com/ICJIA/icjia-accessibility-status)**
 
+## 📸 Screenshots
+
+![ICJIA Accessibility Status Portal Landing Page](screenshots/landing-page.png)
+
 ## 📥 Export Data
 
 All users can export accessibility data in multiple formats directly from the dashboard - **no authentication required**:
