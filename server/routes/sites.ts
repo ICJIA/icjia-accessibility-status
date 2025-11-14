@@ -8,7 +8,8 @@
 
 import { Router } from "express";
 import { supabase } from "../utils/supabase.js";
-import { requireAuth } from "../middleware/auth.js";
+import { requireAuth, AuthRequest } from "../middleware/auth.js";
+import { logAdminActivity } from "../utils/adminActivityLogger.js";
 
 /**
  * Express router for site management endpoints
@@ -104,7 +105,7 @@ router.get("/:id/scans", requireAuth, async (req, res) => {
   }
 });
 
-router.post("/", requireAuth, async (req, res) => {
+router.post("/", requireAuth, async (req: AuthRequest, res) => {
   try {
     const {
       title,

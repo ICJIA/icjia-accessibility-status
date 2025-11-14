@@ -112,6 +112,13 @@ export function ActivityLog({ limit = 20, compact = false }: ActivityLogProps) {
 
   useEffect(() => {
     loadActivities();
+
+    // Poll for new activities every 3 seconds
+    const pollInterval = setInterval(() => {
+      loadActivities();
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
   }, [displayLimit]);
 
   /**
