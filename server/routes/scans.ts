@@ -324,6 +324,16 @@ async function runScanAsync(
 
     const completedAt = new Date().toISOString();
 
+    // Log final scan results
+    console.log(`[Scan ${scanId}] Final Results:`, {
+      lighthouseScore,
+      axeScore,
+      lighthouseReportSize: lighthouseReport
+        ? JSON.stringify(lighthouseReport).length
+        : 0,
+      axeReportSize: axeReport ? JSON.stringify(axeReport).length : 0,
+    });
+
     // Update scan with results
     const { error: updateError } = await supabase
       .from("scans")

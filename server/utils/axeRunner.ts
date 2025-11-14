@@ -5,6 +5,8 @@
 import { chromium } from "playwright";
 import * as fs from "fs";
 import * as path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 export interface AxeResult {
   violations: number;
@@ -34,17 +36,33 @@ export async function runAxeAudit(
 
   try {
     onProgress?.("🌐 Loading page...");
+    console.log(`[Axe] Loading page: ${url}`);
     await page.goto(url, { waitUntil: "networkidle" });
 
     onProgress?.("🔍 Injecting Axe...");
+    console.log("[Axe] Injecting Axe Core library");
 
-    // Inject Axe Core
-    const axeCorePath = require.resolve("axe-core");
+    // Inject Axe Core - use import.meta.url for ES modules
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    const axeCorePath = path.join(
+      __dirname,
+      "../node_modules/axe-core/axe.min.js"
+    );
+
+    if (!fs.existsSync(axeCorePath)) {
+      throw new Error(`Axe Core not found at ${axeCorePath}`);
+    }
+
     const axeCoreContent = fs.readFileSync(axeCorePath, "utf-8");
+    console.log(
+      `[Axe] Loaded Axe Core from ${axeCorePath} (${axeCoreContent.length} bytes)`
+    );
 
     await page.addInitScript(axeCoreContent);
 
     onProgress?.("🔎 Running Axe scan...");
+    console.log("[Axe] Starting Axe scan");
 
     // Run Axe
     const results = await page.evaluate(() => {
@@ -59,6 +77,7 @@ export async function runAxeAudit(
     const axeResults = results as any;
 
     onProgress?.("✅ Axe scan complete");
+    console.log("[Axe] Scan complete - processing results");
 
     // Calculate score (100 - violations)
     const violationCount = axeResults.violations.length;
@@ -79,7 +98,7 @@ export async function runAxeAudit(
       }
     });
 
-    return {
+    const result = {
       violations: violationCount,
       passes: axeResults.passes.length,
       incomplete: axeResults.incomplete.length,
@@ -92,11 +111,15 @@ export async function runAxeAudit(
         nodes: v.nodes.length,
       })),
     };
+
+    console.log("[Axe] Final result:", JSON.stringify(result, null, 2));
+    return result;
   } catch (error) {
-    onProgress?.(`❌ Axe error: ${error instanceof Error ? error.message : String(error)}`);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("[Axe] Error:", errorMsg);
+    onProgress?.(`❌ Axe error: ${errorMsg}`);
     throw error;
   } finally {
     await browser.close();
   }
 }
-

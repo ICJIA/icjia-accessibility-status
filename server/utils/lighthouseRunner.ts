@@ -19,11 +19,13 @@ export async function runLighthouseAudit(
 
   try {
     onProgress?.("🚀 Launching Chrome...");
+    console.log(`[Lighthouse] Launching Chrome for URL: ${url}`);
 
     // Launch Chrome
     chrome = await chromeLauncher.launch({ chromeFlags: ["--headless"] });
 
     onProgress?.("📊 Running Lighthouse audit...");
+    console.log("[Lighthouse] Starting Lighthouse audit");
 
     // Run Lighthouse
     const options = {
@@ -42,8 +44,9 @@ export async function runLighthouseAudit(
     const lhr = runnerResult.lhr;
 
     onProgress?.("✅ Lighthouse audit complete");
+    console.log("[Lighthouse] Audit complete - processing results");
 
-    return {
+    const result = {
       score: Math.round((lhr.categories.accessibility.score || 0) * 100),
       categories: {
         accessibility: {
@@ -61,8 +64,25 @@ export async function runLighthouseAudit(
       },
       audits: lhr.audits,
     };
+
+    console.log(
+      "[Lighthouse] Final result:",
+      JSON.stringify(
+        {
+          score: result.score,
+          categories: result.categories,
+          auditCount: Object.keys(result.audits).length,
+        },
+        null,
+        2
+      )
+    );
+
+    return result;
   } catch (error) {
-    onProgress?.(`❌ Lighthouse error: ${error instanceof Error ? error.message : String(error)}`);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("[Lighthouse] Error:", errorMsg);
+    onProgress?.(`❌ Lighthouse error: ${errorMsg}`);
     throw error;
   } finally {
     if (chrome) {
@@ -70,4 +90,3 @@ export async function runLighthouseAudit(
     }
   }
 }
-
