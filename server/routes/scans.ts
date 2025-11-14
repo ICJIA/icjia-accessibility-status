@@ -10,6 +10,11 @@ import { supabase } from "../utils/supabase.js";
 import { requireAuth, AuthRequest } from "../middleware/auth.js";
 import { runLighthouseAudit } from "../utils/lighthouseRunner.js";
 import { runAxeAudit } from "../utils/axeRunner.js";
+import {
+  logScanStarted,
+  logScanCompleted,
+  logScanFailed,
+} from "../utils/scanActivityLogger.js";
 
 const router = Router();
 
@@ -137,7 +142,7 @@ router.post("/", requireAuth, async (req: AuthRequest, res) => {
     // Verify site exists
     const { data: site, error: siteError } = await supabase
       .from("sites")
-      .select("id, url")
+      .select("id, url, title")
       .eq("id", site_id)
       .single();
 
@@ -182,8 +187,17 @@ router.post("/", requireAuth, async (req: AuthRequest, res) => {
 
     addProgress(scan.id, `🚀 Scan started for ${site.url}`);
 
+    // Log scan started activity
+    await logScanStarted(
+      site_id,
+      site.title,
+      req.userId,
+      req.ip,
+      req.get("user-agent")
+    );
+
     // Run scan in background
-    runScanAsync(scan.id, site.id, site.url, scan_type);
+    runScanAsync(scan.id, site.id, site.url, scan_type, site.title, req.userId);
 
     return res.status(201).json({ scan });
   } catch (error) {
@@ -199,7 +213,9 @@ async function runScanAsync(
   scanId: string,
   siteId: string,
   siteUrl: string,
-  scanType: string
+  scanType: string,
+  siteName: string,
+  userId?: string | null
 ) {
   try {
     // Update scan status to running
@@ -322,21 +338,25 @@ async function runScanAsync(
     }
 
     addProgress(scanId, "✨ Scan complete!");
+
+    // Log scan completed activity
+    await logScanCompleted(siteId, siteName, axeScore, lighthouseScore, userId);
   } catch (error) {
-    addProgress(
-      scanId,
-      `❌ Scan error: ${error instanceof Error ? error.message : String(error)}`
-    );
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    addProgress(scanId, `❌ Scan error: ${errorMessage}`);
 
     // Mark scan as failed
     await supabase
       .from("scans")
       .update({
         status: "failed",
-        error_message: error instanceof Error ? error.message : String(error),
+        error_message: errorMessage,
         completed_at: new Date().toISOString(),
       })
       .eq("id", scanId);
+
+    // Log scan failed activity
+    await logScanFailed(siteId, siteName, errorMessage, userId);
   }
 }
 
