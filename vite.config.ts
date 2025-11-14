@@ -8,6 +8,7 @@ export default defineConfig({
     exclude: ["lucide-react"],
   },
   server: {
+    port: 5173, // Explicitly set port to avoid confusion
     host: "0.0.0.0", // Listen on all interfaces
     open: false, // Don't automatically open browser
     proxy: {
