@@ -12,11 +12,22 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!;
+// Use service role key for backend (bypasses RLS, has admin privileges)
+// Falls back to anon key if service role key is not available
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY!;
+
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.warn(
+    "⚠️  WARNING: SUPABASE_SERVICE_ROLE_KEY not set. Using anon key instead. " +
+      "This may cause RLS policy issues. Add SUPABASE_SERVICE_ROLE_KEY to .env for production."
+  );
+}
 
 /**
  * Supabase client instance
  * Configured with environment variables for database access
+ * Uses service role key for backend operations (bypasses RLS)
  * @type {SupabaseClient}
  */
 export const supabase = createClient(supabaseUrl, supabaseKey);
