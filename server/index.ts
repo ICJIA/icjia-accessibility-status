@@ -312,7 +312,4 @@ app.listen(PORT, () => {
   console.log("🛑 TO STOP THE SERVER:");
   console.log(`   Press Ctrl+C`);
   console.log("\n");
-
-  // Start automatic key deactivation job
-  startKeyDeactivationJob();
 });
