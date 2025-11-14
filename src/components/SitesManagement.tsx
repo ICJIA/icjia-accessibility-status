@@ -108,134 +108,137 @@ export function SitesManagement({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
-              Site Name
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
-              URL
-            </th>
-            <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300">
-              Axe Score
-            </th>
-            <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300">
-              Lighthouse Score
-            </th>
-            <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300">
-              Scans Run
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-          {sites.map((site) => (
-            <tr
-              key={site.id}
-              className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
-            >
-              <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">
-                {site.title}
-              </td>
-              <td className="px-4 py-3 text-gray-600 dark:text-gray-400 truncate max-w-xs">
-                {site.url}
-              </td>
-              <td className="px-4 py-3 text-center">
-                <ScoreBadge score={site.axe_score} size="sm" />
-              </td>
-              <td className="px-4 py-3 text-center">
-                <ScoreBadge score={site.lighthouse_score} size="sm" />
-              </td>
-              <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-400">
-                {scanCounts[site.id] || 0}
-              </td>
-              <td className="px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => onEdit(site)}
-                    className="p-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                    title="Edit site"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setClearDataSite(site)}
-                    className="p-1 text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 transition-colors"
-                    title="Clear all data for this site"
-                  >
-                    <Database className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => onDelete(site)}
-                    className="p-1 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                    title="Delete site"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </td>
+    <>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                Site Name
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                URL
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300">
+                Axe Score
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300">
+                Lighthouse Score
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300">
+                Scans Run
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                Actions
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            {sites.map((site) => (
+              <tr
+                key={site.id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              >
+                <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">
+                  {site.title}
+                </td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-400 truncate max-w-xs">
+                  {site.url}
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <ScoreBadge score={site.axe_score} size="sm" />
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <ScoreBadge score={site.lighthouse_score} size="sm" />
+                </td>
+                <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-400">
+                  {scanCounts[site.id] || 0}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => onEdit(site)}
+                      className="p-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                      title="Edit site"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setClearDataSite(site)}
+                      className="p-1 text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 transition-colors"
+                      title="Clear all data for this site"
+                    >
+                      <Database className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => onDelete(site)}
+                      className="p-1 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                      title="Delete site"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    {/* Clear Data Confirmation Modal */}
-    {clearDataSite && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-              <AlertCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+      {/* Clear Data Confirmation Modal */}
+      {clearDataSite && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                <AlertCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Clear Site Data
+              </h2>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Clear Site Data
-            </h2>
-          </div>
 
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
-            This will permanently delete all scans and historical data for{" "}
-            <strong>{clearDataSite.title}</strong>. This action cannot be undone.
-          </p>
-
-          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded p-3 mb-4">
-            <p className="text-sm text-orange-800 dark:text-orange-200">
-              To confirm, type <strong>"CLEAR DATA"</strong> below:
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              This will permanently delete all scans and historical data for{" "}
+              <strong>{clearDataSite.title}</strong>. This action cannot be
+              undone.
             </p>
-          </div>
 
-          <input
-            type="text"
-            value={clearDataConfirm}
-            onChange={(e) => setClearDataConfirm(e.target.value)}
-            placeholder='Type "CLEAR DATA" to confirm'
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white mb-4"
-          />
+            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded p-3 mb-4">
+              <p className="text-sm text-orange-800 dark:text-orange-200">
+                To confirm, type <strong>"CLEAR DATA"</strong> below:
+              </p>
+            </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                setClearDataSite(null);
-                setClearDataConfirm("");
-              }}
-              className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleClearData}
-              disabled={clearingData || clearDataConfirm !== "CLEAR DATA"}
-              className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
-            >
-              {clearingData ? "Clearing..." : "Clear Data"}
-            </button>
+            <input
+              type="text"
+              value={clearDataConfirm}
+              onChange={(e) => setClearDataConfirm(e.target.value)}
+              placeholder='Type "CLEAR DATA" to confirm'
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white mb-4"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setClearDataSite(null);
+                  setClearDataConfirm("");
+                }}
+                className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleClearData}
+                disabled={clearingData || clearDataConfirm !== "CLEAR DATA"}
+                className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+              >
+                {clearingData ? "Clearing..." : "Clear Data"}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
+    </>
   );
 }
