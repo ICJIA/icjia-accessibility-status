@@ -7,17 +7,18 @@
 import { supabase } from "./supabase.js";
 
 export interface ScanActivityLogEntry {
-  action: string;
+  event_type: string;
+  event_description: string;
   entity_type?: string;
   entity_id?: string;
   user_id?: string | null;
   api_key_id?: string | null;
-  details?: Record<string, any>;
+  metadata?: Record<string, any>;
 }
 
 /**
  * Log a scan activity to the activity_log table
- * Uses the current schema: action, entity_type, entity_id, user_id, api_key_id, details
+ * Uses the new schema: event_type, event_description, entity_type, entity_id, created_by_user, created_by_api_key, metadata
  */
 export async function logScanActivity(
   entry: ScanActivityLogEntry
@@ -25,12 +26,14 @@ export async function logScanActivity(
   try {
     const { error } = await supabase.from("activity_log").insert([
       {
-        action: entry.action,
+        event_type: entry.event_type,
+        event_description: entry.event_description,
         entity_type: entry.entity_type || "scan",
         entity_id: entry.entity_id || null,
-        user_id: entry.user_id || null,
-        api_key_id: entry.api_key_id || null,
-        details: entry.details || {},
+        created_by_user: entry.user_id || null,
+        created_by_api_key: entry.api_key_id || null,
+        metadata: entry.metadata || {},
+        severity: "info",
       },
     ]);
 
@@ -51,13 +54,13 @@ export async function logScanStarted(
   userId?: string | null
 ): Promise<void> {
   await logScanActivity({
-    action: "scan_started",
+    event_type: "scan_started",
+    event_description: `Scan started for site: ${siteName}`,
     entity_type: "scan",
     entity_id: siteId,
     user_id: userId,
-    details: {
+    metadata: {
       site_name: siteName,
-      action_description: `Scan started for site: ${siteName}`,
     },
   });
 }
@@ -73,15 +76,15 @@ export async function logScanCompleted(
   userId?: string | null
 ): Promise<void> {
   await logScanActivity({
-    action: "scan_completed",
+    event_type: "scan_completed",
+    event_description: `Scan completed for site: ${siteName} (Axe: ${axeScore}, Lighthouse: ${lighthouseScore})`,
     entity_type: "scan",
     entity_id: siteId,
     user_id: userId,
-    details: {
+    metadata: {
       site_name: siteName,
       axe_score: axeScore,
       lighthouse_score: lighthouseScore,
-      action_description: `Scan completed for site: ${siteName} (Axe: ${axeScore}, Lighthouse: ${lighthouseScore})`,
     },
   });
 }
@@ -96,14 +99,14 @@ export async function logScanFailed(
   userId?: string | null
 ): Promise<void> {
   await logScanActivity({
-    action: "scan_failed",
+    event_type: "scan_failed",
+    event_description: `Scan failed for site: ${siteName} - ${errorMessage}`,
     entity_type: "scan",
     entity_id: siteId,
     user_id: userId,
-    details: {
+    metadata: {
       site_name: siteName,
       error_message: errorMessage,
-      action_description: `Scan failed for site: ${siteName} - ${errorMessage}`,
     },
   });
 }

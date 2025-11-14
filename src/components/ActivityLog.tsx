@@ -213,6 +213,10 @@ export function ActivityLog({ limit = 20, compact = false }: ActivityLogProps) {
         return <Activity className="h-3 w-3" />;
       case "api_import":
         return <Key className="h-3 w-3" />;
+      case "scan_started":
+      case "scan_completed":
+      case "scan_failed":
+        return <Activity className="h-3 w-3" />;
       default:
         return <Clock className="h-3 w-3" />;
     }
@@ -239,6 +243,12 @@ export function ActivityLog({ limit = 20, compact = false }: ActivityLogProps) {
       case "api_key_created":
       case "api_key_deleted":
         return "text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/30";
+      case "scan_started":
+        return "text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-900/30";
+      case "scan_completed":
+        return "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/30";
+      case "scan_failed":
+        return "text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/30";
       default:
         return "text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800";
     }
