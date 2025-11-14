@@ -7,19 +7,17 @@
 import { supabase } from "./supabase.js";
 
 export interface ScanActivityLogEntry {
-  event_type: string;
-  event_description: string;
-  severity: "info" | "warning" | "error";
-  site_id: string;
-  created_by_user?: string | null;
-  created_by_api_key?: string | null;
-  ip_address?: string | null;
-  user_agent?: string | null;
-  metadata?: Record<string, any>;
+  action: string;
+  entity_type?: string;
+  entity_id?: string;
+  user_id?: string | null;
+  api_key_id?: string | null;
+  details?: Record<string, any>;
 }
 
 /**
  * Log a scan activity to the activity_log table
+ * Uses the current schema: action, entity_type, entity_id, user_id, api_key_id, details
  */
 export async function logScanActivity(
   entry: ScanActivityLogEntry
@@ -27,15 +25,12 @@ export async function logScanActivity(
   try {
     const { error } = await supabase.from("activity_log").insert([
       {
-        event_type: entry.event_type,
-        event_description: entry.event_description,
-        severity: entry.severity,
-        site_id: entry.site_id,
-        created_by_user: entry.created_by_user || null,
-        created_by_api_key: entry.created_by_api_key || null,
-        ip_address: entry.ip_address || null,
-        user_agent: entry.user_agent || null,
-        metadata: entry.metadata || {},
+        action: entry.action,
+        entity_type: entry.entity_type || "scan",
+        entity_id: entry.entity_id || null,
+        user_id: entry.user_id || null,
+        api_key_id: entry.api_key_id || null,
+        details: entry.details || {},
       },
     ]);
 
@@ -53,20 +48,16 @@ export async function logScanActivity(
 export async function logScanStarted(
   siteId: string,
   siteName: string,
-  userId?: string | null,
-  ipAddress?: string | null,
-  userAgent?: string | null
+  userId?: string | null
 ): Promise<void> {
   await logScanActivity({
-    event_type: "scan_started",
-    event_description: `Scan started for site: ${siteName}`,
-    severity: "info",
-    site_id: siteId,
-    created_by_user: userId,
-    ip_address: ipAddress,
-    user_agent: userAgent,
-    metadata: {
+    action: "scan_started",
+    entity_type: "scan",
+    entity_id: siteId,
+    user_id: userId,
+    details: {
       site_name: siteName,
+      action_description: `Scan started for site: ${siteName}`,
     },
   });
 }
@@ -79,22 +70,18 @@ export async function logScanCompleted(
   siteName: string,
   axeScore: number | null,
   lighthouseScore: number | null,
-  userId?: string | null,
-  ipAddress?: string | null,
-  userAgent?: string | null
+  userId?: string | null
 ): Promise<void> {
   await logScanActivity({
-    event_type: "scan_completed",
-    event_description: `Scan completed for site: ${siteName} (Axe: ${axeScore}, Lighthouse: ${lighthouseScore})`,
-    severity: "info",
-    site_id: siteId,
-    created_by_user: userId,
-    ip_address: ipAddress,
-    user_agent: userAgent,
-    metadata: {
+    action: "scan_completed",
+    entity_type: "scan",
+    entity_id: siteId,
+    user_id: userId,
+    details: {
       site_name: siteName,
       axe_score: axeScore,
       lighthouse_score: lighthouseScore,
+      action_description: `Scan completed for site: ${siteName} (Axe: ${axeScore}, Lighthouse: ${lighthouseScore})`,
     },
   });
 }
@@ -106,22 +93,17 @@ export async function logScanFailed(
   siteId: string,
   siteName: string,
   errorMessage: string,
-  userId?: string | null,
-  ipAddress?: string | null,
-  userAgent?: string | null
+  userId?: string | null
 ): Promise<void> {
   await logScanActivity({
-    event_type: "scan_failed",
-    event_description: `Scan failed for site: ${siteName} - ${errorMessage}`,
-    severity: "error",
-    site_id: siteId,
-    created_by_user: userId,
-    ip_address: ipAddress,
-    user_agent: userAgent,
-    metadata: {
+    action: "scan_failed",
+    entity_type: "scan",
+    entity_id: siteId,
+    user_id: userId,
+    details: {
       site_name: siteName,
       error_message: errorMessage,
+      action_description: `Scan failed for site: ${siteName} - ${errorMessage}`,
     },
   });
 }
-

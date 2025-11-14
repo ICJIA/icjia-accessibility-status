@@ -188,13 +188,7 @@ router.post("/", requireAuth, async (req: AuthRequest, res) => {
     addProgress(scan.id, `🚀 Scan started for ${site.url}`);
 
     // Log scan started activity
-    await logScanStarted(
-      site_id,
-      site.title,
-      req.userId,
-      req.ip,
-      req.get("user-agent")
-    );
+    await logScanStarted(site_id, site.title, req.userId);
 
     // Run scan in background
     runScanAsync(scan.id, site.id, site.url, scan_type, site.title, req.userId);

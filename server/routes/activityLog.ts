@@ -32,14 +32,7 @@ router.get("/", requireAuth, async (req, res) => {
       count,
     } = await supabase
       .from("activity_log")
-      .select(
-        `
-        *,
-        user:created_by_user (username, email),
-        api_key:created_by_api_key (key_name, api_key_prefix, api_key_suffix)
-      `,
-        { count: "exact" }
-      )
+      .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
