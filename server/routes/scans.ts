@@ -16,6 +16,61 @@ const router = Router();
 // Store progress updates for each scan
 const scanProgress = new Map<string, string[]>();
 
+// Scan rate limiting: track scans per site per hour
+const scanRateLimits = new Map<string, number[]>(); // site_id -> array of scan timestamps
+
+/**
+ * Get the scan rate limit based on environment
+ * Production: 10 scans per hour
+ * Development: 50 scans per hour
+ */
+function getScanRateLimit(): number {
+  return process.env.NODE_ENV === "production" ? 10 : 50;
+}
+
+/**
+ * Check if a site has exceeded its scan rate limit
+ */
+function checkScanRateLimit(siteId: string): {
+  allowed: boolean;
+  remaining: number;
+  resetTime: Date;
+} {
+  const now = Date.now();
+  const oneHourAgo = now - 60 * 60 * 1000;
+  const limit = getScanRateLimit();
+
+  // Get or initialize scan timestamps for this site
+  let timestamps = scanRateLimits.get(siteId) || [];
+
+  // Remove timestamps older than 1 hour
+  timestamps = timestamps.filter((ts) => ts > oneHourAgo);
+
+  // Update the map
+  scanRateLimits.set(siteId, timestamps);
+
+  const scansInLastHour = timestamps.length;
+  const allowed = scansInLastHour < limit;
+  const remaining = Math.max(0, limit - scansInLastHour);
+
+  // Calculate reset time (when the oldest scan expires)
+  let resetTime = new Date(now + 60 * 60 * 1000); // Default to 1 hour from now
+  if (timestamps.length > 0) {
+    resetTime = new Date(timestamps[0] + 60 * 60 * 1000);
+  }
+
+  return { allowed, remaining, resetTime };
+}
+
+/**
+ * Record a scan for rate limiting
+ */
+function recordScan(siteId: string): void {
+  const timestamps = scanRateLimits.get(siteId) || [];
+  timestamps.push(Date.now());
+  scanRateLimits.set(siteId, timestamps);
+}
+
 /**
  * Store progress message for a scan
  */
@@ -90,6 +145,17 @@ router.post("/", requireAuth, async (req: AuthRequest, res) => {
       return res.status(404).json({ error: "Site not found" });
     }
 
+    // Check scan rate limit
+    const rateLimit = checkScanRateLimit(site_id);
+    if (!rateLimit.allowed) {
+      const limit = getScanRateLimit();
+      return res.status(429).json({
+        error: `Rate limit exceeded. Maximum ${limit} scans per hour per site.`,
+        remaining: rateLimit.remaining,
+        resetTime: rateLimit.resetTime,
+      });
+    }
+
     // Create scan record with status='pending'
     const { data: scan, error: scanError } = await supabase
       .from("scans")
@@ -110,6 +176,9 @@ router.post("/", requireAuth, async (req: AuthRequest, res) => {
       console.error("Error creating scan:", scanError);
       return res.status(500).json({ error: "Failed to create scan" });
     }
+
+    // Record the scan for rate limiting
+    recordScan(site_id);
 
     addProgress(scan.id, `🚀 Scan started for ${site.url}`);
 

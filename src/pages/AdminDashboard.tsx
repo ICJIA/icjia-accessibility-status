@@ -18,10 +18,13 @@ import {
   BarChart3,
   Activity,
   Globe,
+  AlertTriangle,
 } from "lucide-react";
 import { ActivityLog } from "../components/ActivityLog";
 import { PayloadComparison } from "../components/PayloadComparison";
+import { SitesManagement } from "../components/SitesManagement";
 import { api } from "../lib/api";
+import { Site } from "../types";
 
 /**
  * Represents a user in the system
@@ -66,6 +69,10 @@ export function AdminDashboard() {
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [showEditSiteModal, setShowEditSiteModal] = useState(false);
+  const [showDeleteSiteModal, setShowDeleteSiteModal] = useState(false);
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+  const [sitesRefreshKey, setSitesRefreshKey] = useState(0);
 
   useEffect(() => {
     loadUsers();
@@ -134,6 +141,59 @@ export function AdminDashboard() {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const handleEditSite = (site: Site) => {
+    setSelectedSite(site);
+    setShowEditSiteModal(true);
+  };
+
+  const handleDeleteSite = (site: Site) => {
+    setSelectedSite(site);
+    setShowDeleteSiteModal(true);
+  };
+
+  const handleSaveEditSite = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedSite) return;
+
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const url = formData.get("url") as string;
+    const sitemap_url = (formData.get("sitemap_url") as string) || null;
+    const documentation_url =
+      (formData.get("documentation_url") as string) || null;
+
+    try {
+      await api.sites.update(selectedSite.id, {
+        title,
+        description,
+        url,
+        sitemap_url,
+        documentation_url,
+      });
+      setShowEditSiteModal(false);
+      setSelectedSite(null);
+      setSitesRefreshKey((prev) => prev + 1);
+      alert("Site updated successfully");
+    } catch (err: any) {
+      alert(`Failed to update site: ${err.message}`);
+    }
+  };
+
+  const handleConfirmDeleteSite = async () => {
+    if (!selectedSite) return;
+
+    try {
+      await api.sites.delete(selectedSite.id);
+      setShowDeleteSiteModal(false);
+      setSelectedSite(null);
+      setSitesRefreshKey((prev) => prev + 1);
+      alert("Site deleted successfully");
+    } catch (err: any) {
+      alert(`Failed to delete site: ${err.message}`);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -147,7 +207,7 @@ export function AdminDashboard() {
       </div>
 
       {/* Action Cards Section - Top */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {/* Add Site Card - First */}
         <a
           href="/admin/sites/new"
@@ -219,6 +279,29 @@ export function AdminDashboard() {
             View and manage all API payload uploads
           </p>
         </a>
+      </div>
+
+      {/* Sites Management Section */}
+      <div className="mb-12">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Tracked Sites
+            </h2>
+            <a
+              href="/admin/sites/new"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+            >
+              + Add Site
+            </a>
+          </div>
+          <SitesManagement
+            key={sitesRefreshKey}
+            onEdit={handleEditSite}
+            onDelete={handleDeleteSite}
+            onRefresh={() => setSitesRefreshKey((prev) => prev + 1)}
+          />
+        </div>
       </div>
 
       {/* User Management Section */}
@@ -478,6 +561,130 @@ export function AdminDashboard() {
         isOpen={showComparisonModal}
         onClose={() => setShowComparisonModal(false)}
       />
+
+      {/* Edit Site Modal */}
+      {showEditSiteModal && selectedSite && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Edit Site
+            </h2>
+            <form onSubmit={handleSaveEditSite} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Site Name
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  defaultValue={selectedSite.title}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  defaultValue={selectedSite.description}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  URL
+                </label>
+                <input
+                  type="url"
+                  name="url"
+                  defaultValue={selectedSite.url}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Sitemap URL (optional)
+                </label>
+                <input
+                  type="url"
+                  name="sitemap_url"
+                  defaultValue={selectedSite.sitemap_url || ""}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Documentation URL (optional)
+                </label>
+                <input
+                  type="url"
+                  name="documentation_url"
+                  defaultValue={selectedSite.documentation_url || ""}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div className="flex gap-2 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditSiteModal(false);
+                    setSelectedSite(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Site Confirmation Modal */}
+      {showDeleteSiteModal && selectedSite && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Delete Site
+              </h2>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Are you sure you want to delete{" "}
+              <strong>{selectedSite.title}</strong>? This action cannot be
+              undone and will delete all associated scans and data.
+            </p>
+            <div className="flex gap-2 pt-4">
+              <button
+                onClick={handleConfirmDeleteSite}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeleteSiteModal(false);
+                  setSelectedSite(null);
+                }}
+                className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
