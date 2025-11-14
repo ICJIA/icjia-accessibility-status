@@ -1,7 +1,7 @@
 /**
  * @fileoverview AdminDashboard Page
- * Administrative dashboard for managing users, API keys, and system monitoring.
- * Provides access to activity logs, payload comparison, and user management.
+ * Administrative dashboard for managing users and system monitoring.
+ * Provides access to activity logs, site management, and user management.
  *
  * @module pages/AdminDashboard
  */
@@ -17,7 +17,6 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { ActivityLog } from "../components/ActivityLog";
-import { PayloadComparison } from "../components/PayloadComparison";
 import { SitesManagement } from "../components/SitesManagement";
 import { api } from "../lib/api";
 import { Site } from "../types";
@@ -46,11 +45,9 @@ interface User {
  *
  * Administrative interface providing:
  * - User management (create, delete, reset password)
- * - API key management
+ * - Site management (create, edit, delete, clear data)
  * - Activity log viewing
- * - Payload comparison tool
  * - System statistics and monitoring
- * - Database management options
  *
  * @component
  * @returns {React.ReactElement} The admin dashboard page
@@ -64,7 +61,6 @@ export function AdminDashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [showComparisonModal, setShowComparisonModal] = useState(false);
   const [showEditSiteModal, setShowEditSiteModal] = useState(false);
   const [showDeleteSiteModal, setShowDeleteSiteModal] = useState(false);
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
@@ -357,16 +353,6 @@ export function AdminDashboard() {
       </div>
 
       {/* Payload Comparison Section */}
-      <div className="mb-12">
-        <button
-          onClick={() => setShowComparisonModal(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all shadow hover:shadow-lg font-medium"
-        >
-          <GitCompare className="h-5 w-5" />
-          Compare Payloads
-        </button>
-      </div>
-
       {/* Recent Activity Section - Bottom */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
