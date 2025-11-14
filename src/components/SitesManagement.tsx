@@ -85,7 +85,31 @@ export function SitesManagement({
 
       // Start polling for scan completion
       let pollCount = 0;
+      let maxPollAttempts = 600; // 20 minutes max (600 * 2 seconds)
+      let pollAttempts = 0;
+
       const pollInterval = setInterval(async () => {
+        pollAttempts++;
+
+        // Safety check: stop polling after max attempts to prevent infinite loops
+        if (pollAttempts > maxPollAttempts) {
+          console.warn(
+            `[Scan Polling] Max poll attempts reached for scan ${scanId}`
+          );
+          clearInterval(pollInterval);
+          delete pollIntervalsRef.current[site.id];
+          setScanningSites((prev) => {
+            const next = new Set(prev);
+            next.delete(site.id);
+            return next;
+          });
+          setScanMessages((prev) => ({
+            ...prev,
+            [site.id]: "⚠️ Scan polling timeout - please refresh",
+          }));
+          return;
+        }
+
         try {
           const scansResponse = await api.sites.getScans(site.id);
           const scan = scansResponse.scans?.find((s: any) => s.id === scanId);
@@ -168,6 +192,7 @@ export function SitesManagement({
           }
         } catch (error) {
           console.error("Failed to check scan status:", error);
+          // Don't stop polling on error - just log it
         }
       }, 2000); // Poll every 2 seconds
 
