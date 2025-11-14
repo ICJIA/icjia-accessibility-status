@@ -245,6 +245,34 @@ router.post("/", requireAuth, async (req: AuthRequest, res) => {
               `[Mock Scan] Created score history record for site ${scan.site_id}`
             );
 
+            // Update the site with the new scores
+            const updateData: any = {
+              updated_at: completedAt,
+            };
+
+            if (lighthouseScore !== null) {
+              updateData.lighthouse_score = lighthouseScore;
+              updateData.lighthouse_last_updated = completedAt;
+            }
+
+            if (axeScore !== null) {
+              updateData.axe_score = axeScore;
+              updateData.axe_last_updated = completedAt;
+            }
+
+            const { error: siteUpdateError } = await supabase
+              .from("sites")
+              .update(updateData)
+              .eq("id", scan.site_id);
+
+            if (siteUpdateError) {
+              console.error("Error updating site scores:", siteUpdateError);
+            } else {
+              console.log(
+                `[Mock Scan] Updated site ${scan.site_id} with new scores`
+              );
+            }
+
             // Generate mock violations
             await generateMockViolations(scan.id, siteUrl);
           }
