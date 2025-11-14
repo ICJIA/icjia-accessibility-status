@@ -65,6 +65,17 @@ export async function runLighthouseAudit(
       audits: lhr.audits,
     };
 
+    // Count failed audits
+    const failedAudits = Object.entries(lhr.audits)
+      .filter(
+        ([_, audit]: [string, any]) => audit.score !== null && audit.score < 1
+      )
+      .map(([id, audit]: [string, any]) => ({
+        id,
+        title: audit.title,
+        score: audit.score,
+      }));
+
     console.log(
       "[Lighthouse] Final result:",
       JSON.stringify(
@@ -72,6 +83,8 @@ export async function runLighthouseAudit(
           score: result.score,
           categories: result.categories,
           auditCount: Object.keys(result.audits).length,
+          failedAuditCount: failedAudits.length,
+          failedAudits: failedAudits.slice(0, 10), // Log first 10 failed audits
         },
         null,
         2
