@@ -42,8 +42,15 @@ export function SitesManagement({
   useEffect(() => {
     loadSites();
 
+    // Add debug logging to detect page reloads
+    const handleBeforeUnload = () => {
+      console.warn("[SitesManagement] Page is being unloaded/reloaded!");
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     // Cleanup polling intervals on unmount
     return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       Object.values(pollIntervalsRef.current).forEach((interval) => {
         clearInterval(interval);
       });
@@ -90,6 +97,12 @@ export function SitesManagement({
 
       const pollInterval = setInterval(async () => {
         pollAttempts++;
+        console.log(
+          `[Scan Polling] Attempt ${pollAttempts} for scan ${scanId.substring(
+            0,
+            8
+          )}...`
+        );
 
         // Safety check: stop polling after max attempts to prevent infinite loops
         if (pollAttempts > maxPollAttempts) {
@@ -113,6 +126,9 @@ export function SitesManagement({
         try {
           const scansResponse = await api.sites.getScans(site.id);
           const scan = scansResponse.scans?.find((s: any) => s.id === scanId);
+          console.log(
+            `[Scan Polling] Scan status: ${scan?.status || "NOT FOUND"}`
+          );
 
           if (!scan) return;
 
