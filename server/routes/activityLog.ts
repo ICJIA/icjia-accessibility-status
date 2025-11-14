@@ -26,7 +26,7 @@ router.get("/", requireAuth, async (req, res) => {
     const limit = parseInt(req.query.limit as string) || 20;
     const offset = parseInt(req.query.offset as string) || 0;
 
-    // First, fetch activity log entries (exclude entries with null event_type)
+    // First, fetch activity log entries
     const {
       data: activities,
       error,
@@ -34,7 +34,6 @@ router.get("/", requireAuth, async (req, res) => {
     } = await supabase
       .from("activity_log")
       .select("*", { count: "exact" })
-      .not("event_type", "is", null)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -43,8 +42,10 @@ router.get("/", requireAuth, async (req, res) => {
       return res.status(500).json({ error: "Failed to fetch activity log" });
     }
 
-    // Fetch user and api_key data separately if needed
-    let enrichedActivities = activities || [];
+    // Filter out entries with null event_type (old entries before logging was fixed)
+    let enrichedActivities = (activities || []).filter(
+      (a: any) => a.event_type !== null && a.event_type !== undefined
+    );
 
     if (enrichedActivities.length > 0) {
       // Get unique user IDs
