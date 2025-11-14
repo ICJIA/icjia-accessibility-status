@@ -47,6 +47,12 @@ router.get("/", requireAuth, async (req, res) => {
       (a: any) => a.event_type !== null && a.event_type !== undefined
     );
 
+    console.log(
+      `[Activity Log API] Fetched ${activities?.length || 0} total entries, ${
+        enrichedActivities.length
+      } with valid event_type`
+    );
+
     if (enrichedActivities.length > 0) {
       // Get unique user IDs
       const userIds = [

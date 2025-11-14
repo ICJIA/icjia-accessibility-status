@@ -51,6 +51,24 @@ CREATE INDEX IF NOT EXISTS idx_activity_log_site_id ON activity_log(site_id);
 CREATE INDEX IF NOT EXISTS idx_activity_log_severity ON activity_log(severity);
 CREATE INDEX IF NOT EXISTS idx_activity_log_created_by_user ON activity_log(created_by_user);
 
+-- ============================================================================
+-- UPDATE RLS POLICIES FOR ACTIVITY LOG
+-- ============================================================================
+
+-- Drop existing policies if they exist (to avoid conflicts)
+DROP POLICY IF EXISTS "Allow authenticated to read activity_log" ON activity_log;
+DROP POLICY IF EXISTS "Allow authenticated to insert activity_log" ON activity_log;
+
+-- Create new policies
+-- Allow authenticated users to read activity log
+CREATE POLICY "Allow authenticated to read activity_log" ON activity_log
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Allow anyone to insert activity log (backend service role will use this)
+-- The backend uses service role which bypasses RLS, but we need a policy for authenticated users
+CREATE POLICY "Allow anyone to insert activity_log" ON activity_log
+  FOR INSERT WITH CHECK (true);
+
 DO $$
 BEGIN
   RAISE NOTICE 'Migration 07 complete: Activity log updated for scan tracking';
