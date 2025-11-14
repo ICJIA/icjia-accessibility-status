@@ -205,7 +205,9 @@ export function Navigation() {
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center space-x-2"
             >
               <Home className="h-5 w-5" />
-              <span className="hidden sm:inline">Dashboard</span>
+              <span className="hidden sm:inline">
+                {user ? "Dashboard" : "Home"}
+              </span>
             </Link>
 
             <button
