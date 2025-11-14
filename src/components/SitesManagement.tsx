@@ -5,7 +5,7 @@
  * @module components/SitesManagement
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Edit2,
   Trash2,
@@ -36,9 +36,18 @@ export function SitesManagement({
   const [clearDataConfirm, setClearDataConfirm] = useState("");
   const [clearingData, setClearingData] = useState(false);
   const [scanningSites, setScanningSites] = useState<Set<string>>(new Set());
+  const [scanMessages, setScanMessages] = useState<Record<string, string>>({});
+  const pollIntervalsRef = useRef<Record<string, NodeJS.Timeout>>({});
 
   useEffect(() => {
     loadSites();
+
+    // Cleanup polling intervals on unmount
+    return () => {
+      Object.values(pollIntervalsRef.current).forEach((interval) => {
+        clearInterval(interval);
+      });
+    };
   }, []);
 
   const loadSites = async () => {
@@ -69,17 +78,89 @@ export function SitesManagement({
   const handleRunScan = async (site: Site) => {
     try {
       setScanningSites((prev) => new Set([...prev, site.id]));
-      await api.scans.trigger(site.id, "both");
-      // Scan triggered successfully, will be logged in activity log
+      setScanMessages((prev) => ({ ...prev, [site.id]: "Starting scan..." }));
+
+      const response = await api.scans.trigger(site.id, "both");
+      const scanId = response.scan.id;
+
+      // Start polling for scan completion
+      const pollInterval = setInterval(async () => {
+        try {
+          const scansResponse = await api.sites.getScans(site.id);
+          const scan = scansResponse.scans?.find((s: any) => s.id === scanId);
+
+          if (!scan) return;
+
+          if (scan.status === "completed") {
+            clearInterval(pollInterval);
+            delete pollIntervalsRef.current[site.id];
+            setScanningSites((prev) => {
+              const next = new Set(prev);
+              next.delete(site.id);
+              return next;
+            });
+            setScanMessages((prev) => ({
+              ...prev,
+              [site.id]: `✅ Scan completed! Axe: ${scan.axe_score}/100, Lighthouse: ${scan.lighthouse_score}/100`,
+            }));
+            // Auto-hide message after 5 seconds
+            setTimeout(() => {
+              setScanMessages((prev) => {
+                const next = { ...prev };
+                delete next[site.id];
+                return next;
+              });
+            }, 5000);
+            // Refresh sites list
+            await loadSites();
+          } else if (scan.status === "failed") {
+            clearInterval(pollInterval);
+            delete pollIntervalsRef.current[site.id];
+            setScanningSites((prev) => {
+              const next = new Set(prev);
+              next.delete(site.id);
+              return next;
+            });
+            setScanMessages((prev) => ({
+              ...prev,
+              [site.id]: `❌ Scan failed: ${
+                scan.error_message || "Unknown error"
+              }`,
+            }));
+            // Auto-hide message after 5 seconds
+            setTimeout(() => {
+              setScanMessages((prev) => {
+                const next = { ...prev };
+                delete next[site.id];
+                return next;
+              });
+            }, 5000);
+          }
+        } catch (error) {
+          console.error("Failed to check scan status:", error);
+        }
+      }, 2000); // Poll every 2 seconds
+
+      pollIntervalsRef.current[site.id] = pollInterval;
     } catch (error) {
       console.error("Failed to trigger scan:", error);
-      alert("Failed to trigger scan");
-    } finally {
+      setScanMessages((prev) => ({
+        ...prev,
+        [site.id]: "❌ Failed to trigger scan",
+      }));
       setScanningSites((prev) => {
         const next = new Set(prev);
         next.delete(site.id);
         return next;
       });
+      // Auto-hide message after 3 seconds
+      setTimeout(() => {
+        setScanMessages((prev) => {
+          const next = { ...prev };
+          delete next[site.id];
+          return next;
+        });
+      }, 3000);
     }
   };
 
@@ -228,6 +309,24 @@ export function SitesManagement({
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Scan Status Messages */}
+      <div className="space-y-2 mt-4">
+        {Object.entries(scanMessages).map(([siteId, message]) => (
+          <div
+            key={siteId}
+            className={`p-3 rounded-lg text-sm font-medium ${
+              message.includes("✅")
+                ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
+                : message.includes("❌")
+                ? "bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
+                : "bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800"
+            }`}
+          >
+            {message}
+          </div>
+        ))}
       </div>
 
       {/* Clear Data Confirmation Modal */}
