@@ -5,6 +5,16 @@
 
 import { supabase } from "./supabase.js";
 
+// ANSI color codes
+const colors = {
+  reset: "\x1b[0m",
+  bright: "\x1b[1m",
+  cyan: "\x1b[36m",
+  green: "\x1b[32m",
+  red: "\x1b[31m",
+  yellow: "\x1b[33m",
+};
+
 interface AuditLogEntry {
   action: string;
   description: string;
@@ -27,12 +37,20 @@ export async function log(entry: AuditLogEntry): Promise<void> {
     ]);
 
     if (error) {
-      console.error(`[AUDIT LOG ERROR] Failed to log ${entry.action}:`, error);
+      console.error(
+        `${colors.red}[AUDIT LOG ERROR]${colors.reset} Failed to log ${entry.action}:`,
+        error
+      );
     } else {
-      console.log(`[AUDIT LOG] ✓ ${entry.action}: ${entry.description}`);
+      console.log(
+        `${colors.cyan}${colors.bright}[AUDIT LOG]${colors.reset} ${colors.green}✓${colors.reset} ${colors.cyan}${entry.action}${colors.reset}: ${entry.description}`
+      );
     }
   } catch (err) {
-    console.error(`[AUDIT LOG EXCEPTION] ${entry.action}:`, err);
+    console.error(
+      `${colors.red}[AUDIT LOG EXCEPTION]${colors.reset} ${entry.action}:`,
+      err
+    );
   }
 }
 
@@ -160,4 +178,3 @@ export async function logLogout(
     metadata: { username },
   });
 }
-
