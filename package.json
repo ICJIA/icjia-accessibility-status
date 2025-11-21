@@ -16,7 +16,7 @@
     "build:backend": "echo 'Backend uses tsx runtime - no build needed'",
     "production:simple": "yarn build && concurrently \"vite preview --host 0.0.0.0 --port 5173\" \"tsx server/index.ts\"",
     "start": "yarn build && pm2 start ecosystem.config.cjs && node scripts/verify-production-start.js",
-    "start:serve": "yarn build && concurrently \"pm2 start ecosystem.config.cjs\" \"npx serve -s dist -l 5173\" && node scripts/verify-production-start.js",
+    "start:serve": "yarn build && node scripts/start-with-serve.js",
     "stop": "pm2 stop ecosystem.config.cjs",
     "restart": "pm2 restart ecosystem.config.cjs",
     "logs": "pm2 logs icjia-accessibility-backend",
