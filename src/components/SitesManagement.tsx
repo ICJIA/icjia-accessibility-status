@@ -273,7 +273,8 @@ export function SitesManagement({
     try {
       setClearingData(true);
       // Call API to clear all scans and history for this site
-      await fetch(`/api/sites/${clearDataSite.id}/clear-data`, {
+      const apiUrl = import.meta.env.VITE_API_URL || "/api";
+      await fetch(`${apiUrl}/sites/${clearDataSite.id}/clear-data`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

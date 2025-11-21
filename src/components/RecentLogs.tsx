@@ -18,7 +18,8 @@ export default function RecentLogs() {
 
   const loadLogs = async () => {
     try {
-      const response = await fetch("/api/audit-logs?limit=20");
+      const apiUrl = import.meta.env.VITE_API_URL || "/api";
+      const response = await fetch(`${apiUrl}/audit-logs?limit=20`);
       if (response.ok) {
         const data = await response.json();
         setLogs(data.logs || []);
