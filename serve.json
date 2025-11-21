@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/**",
+      "destination": "http://localhost:3001/api/**"
+    }
+  ],
+  "headers": [
+    {
+      "source": "**",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
+

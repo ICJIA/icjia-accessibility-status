@@ -69,8 +69,8 @@ async function main() {
 
   log("\n🚀 Starting frontend with serve on port 5173...", "cyan");
 
-  // Start serve
-  spawn("npx", ["serve", "-s", "dist", "-l", "5173"], {
+  // Start serve with proxy to backend
+  spawn("npx", ["serve", "-s", "dist", "-l", "5173", "-c", "serve.json"], {
     stdio: "inherit",
   });
 
@@ -88,4 +88,3 @@ main().catch((err) => {
   log(`Error: ${err.message}`, "yellow");
   process.exit(1);
 });
-
