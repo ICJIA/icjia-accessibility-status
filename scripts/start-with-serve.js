@@ -69,8 +69,9 @@ async function main() {
 
   log("\n🚀 Starting frontend with serve on port 5173...", "cyan");
 
-  // Start serve with proxy to backend
-  spawn("npx", ["serve", "-s", "dist", "-l", "5173", "-c", "serve.json"], {
+  // Start serve - serves dist/ directory on port 5173
+  // The frontend uses relative /api paths which will be proxied by the backend CORS
+  spawn("npx", ["serve", "-s", "dist", "-l", "5173"], {
     stdio: "inherit",
   });
 

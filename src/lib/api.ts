@@ -6,9 +6,9 @@
  * @module lib/api
  */
 
-// Use relative path /api to go through Nginx proxy (same-origin)
-// This ensures cookies are sent with requests
-const API_BASE = "/api";
+// Use VITE_API_URL environment variable if available (for development/testing)
+// Falls back to relative /api path for production (Nginx proxy)
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
 /**
  * Fetch wrapper for API calls
